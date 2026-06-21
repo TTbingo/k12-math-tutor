@@ -6,7 +6,7 @@ description: |
   Do not load when: 纯公式查询、高等数学、考研数学、奥赛冲刺、教学管理/排课/教务。
   识别关键词：小学/初中/高中+数学、鸡兔同笼、奥数、算理、数感、验算、一题多解、几何辅助线、思维训练、内驱力、情绪翻译机、解释风格、ABCDE、考试挫败、数学焦虑、家长会、家校沟通、跨阶段衔接、小升初、初升高。
   Output: 一道题的家长辅导指南（六合一：题目解析+一题多解+难点预判+引导脚本+知识脉络+延伸练习），或一节概念微课（导入+探究+例题+小结+作业），或一份家长情绪应对话术（情绪翻译机+3P+ABCDE）。
-version: 2.12.2
+version: 2.13.0
 author: "WorkBuddy · 基于胡小群老师、昍爸、子贤老师、塞利格曼的公开方法论"
 allowed-tools: Read,Write,WebSearch,WebFetch
 ---
@@ -197,6 +197,17 @@ allowed-tools: Read,Write,WebSearch,WebFetch
 | `gotchas.md` | 24 个失败模式 G1-G24 + 5 个反例 A1-A5（**飞轮追加** v2.11.0+） |
 | `tutor-log.md` | 辅导记录模板（P3 回顾用） |
 
+### Evals 与 Scripts（v2.13.0+）
+| 路径 | 一句话说明 |
+|------|----------|
+| `evals/eval-set.md` | **20 题活体测试集**（4 维打分 x 0-3，月度跑一次量化改造效果） |
+| `references/skill-health.md` | **月度评估记录**（每次跑 eval 后填分数，对比版本变化） |
+| `scripts/check-latex.py` | **LaTeX 残留扫描**（防 G10 复发，扫所有 .md 检测反斜杠命令） |
+| `scripts/extract-equation.py` | **算理考点识别**（输入题目文本 -> 自动匹配考点+方法论+年级） |
+| `scripts/diff-case.py` | **方法论偏离对比**（两次同类型题辅导输出对比，标出偏离维度） |
+
+> **Scripts 使用**：`python scripts/check-latex.py --dir .` / `python scripts/extract-equation.py --text "题目"` / `python scripts/diff-case.py file1 file2`
+
 > **方法论文件使用提示**：所有 methodology-*.md 头部都有「🚀 快速调用矩阵」表，辅导中按场景查表直接跳到对应章节（v2.12.0+ 新增）。
 
 ---
@@ -225,8 +236,8 @@ allowed-tools: Read,Write,WebSearch,WebFetch
 
 ## 元信息
 
-- **版本**：2.12.0（2026-06-21）
-- **变更**：P1 改造——方法论文件活化（4 份头部加「🚀 快速调用矩阵」）/ 约束表卡片化（新建 constraints-quick-ref.md）/ 案例从 14 砍到 5（新建 anti-patterns.md 收容已退休）
-- **下版本**：P2 待定（Evals + Scripts + luban 联动）
+- **版本**：2.13.0（2026-06-21）
+- **变更**：P2 改造——Evals（20 题活体测试集 + 月度评估记录）/ Scripts（check-latex.py + extract-equation.py + diff-case.py）
+- **下版本**：P2-3 luban 联动（待定）
 - **作者**：WorkBuddy · 基于胡小群老师、昍爸、子贤老师、塞利格曼的公开方法论
 - **许可**：基于公开方法论，引用请注明原作者
