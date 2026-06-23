@@ -145,9 +145,9 @@ k12-math-tutor/
 │   ├── check-latex.py                     # LaTeX 黑名单扫描
 │   ├── extract-equation.py                # 关键词→考点→方法论匹配
 │   └── diff-case.py                       # 方法论偏离对比
-└── references/                            # 23+ 个参考资产
+└── references/                            # 27+ 个参考资产
     ├── constraints-quick-ref.md           # 16 条硬约束卡片
-    ├── grade-quick-ref.md                 # 1-12 年级核心知识点速查
+    ├── grade-quick-ref.md                 # 1-12 年级知识点 + K12 思想方法阶梯脉络
     ├── grade-curriculum-map.md            # 1-6 年级知识点与算理对照
     ├── comprehensive-knowledge-base.md     # 小学数学全量知识库
     ├── junior-math-review-compendium.md   # 初中 26 章中考总复习

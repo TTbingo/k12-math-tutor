@@ -210,7 +210,7 @@ allowed-tools: Read,Write,WebSearch,WebFetch
 | `hs-math-curriculum-2017.md` | 高中数学课标2017版 |
 | `hs-math-review-compendium.md` | **高中数学五册深度萃取（18章，含核心概念群+思想方法+教学暗线+高考转化+易错警示+公式速查）** |
 | `grade-curriculum-map.md` | 1-6年级知识点+算理对照 |
-| `grade-quick-ref.md` | 1-12年级核心知识点速查 |
+| `grade-quick-ref.md` | 1-12年级知识点速查 + K12思想方法阶梯式步进脉络（算理五级阶梯/十二种核心方法/十条跨学段暗线/昍爸六大思维落地锚点/胡小群算理追问） |
 
 ### 方法论（4 套）
 | 文件 | 老师 | 一句话核心 |
@@ -239,7 +239,7 @@ allowed-tools: Read,Write,WebSearch,WebFetch
 | `olympiad-cases.md` | 奥数经典题库 |
 | **`case-studies.md`** | **5 维精选案例（算理/应用题/几何/情绪/跨阶段），统一「3+5+10+3」格式** |
 | `anti-patterns.md` | 9 个已退休案例 + 反例示范（v2.12.0 砍案例后迁移） |
-| `gotchas.md` | 24 个失败模式 G1-G24 + 5 个反例 A1-A5（**飞轮追加** v2.11.0+） |
+| `gotchas.md` | 29 个失败模式 G1-G29 + 5 个反例 A1-A5（**飞轮追加** v2.11.0+） |
 | `tutor-log.md` | 辅导记录模板（P3 回顾用） |
 
 ### Evals 与 Scripts（v2.13.0+）
