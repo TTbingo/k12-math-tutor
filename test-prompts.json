@@ -1,5 +1,5 @@
 {
-  "version": "2.13.2",
+  "version": "2.17.0",
   "description": "k12-math-tutor 测试用例集（小初高一体化），覆盖6大辅导场景 × 学生/家长双模式 + 塞利格曼专项 + 禁止加载场景",
   "testCases": [
     {

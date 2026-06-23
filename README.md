@@ -69,12 +69,12 @@
 | **G26** | 说"下一条消息发"但实际没发附件 | 双发 SOP 三件套（必须 deliver_attachments）|
 | **G27** | 精简版混入元数据被截断 | 精简版消息必须纯净，≤1500 字零元数据 |
 
-### 5. 资产完整性（v2.13.0）
+### 5. 资产完整性（v2.17.0）
 
-- **14 个 reference 资产**（方法论 4 份 / 课标 / 知识库 / gotchas / 案例 / 反例 / 4 份规范 / skill-health）
+- **22+ 个 reference 资产**（方法论 8 份 / 课标 3 份 / 知识库 5 份 / gotchas / 案例 / 反例 / 规范 4 份 / skill-health / exam-bank）
 - **5 维精选案例** + 9 个已退休反例（v2.12.0 从 14 例瘦身）
-- **13 条硬约束卡片化**（v2.12.0 初始 12 条 → v2.13.1 新增约束 13「具体化表扬必含」，源自 G28）
-- **20 题 Evals 活体测试**（v2.13.0，4 维打分）
+- **16 条硬约束卡片化**（v2.12.0 初始 12 条 → v2.13.1 新增约束 13「具体化表扬必含」→ v2.14.0 新增 14/15/16「生活场景/内驱力/四层检验」）
+- **20 题 Evals 活体测试**（v2.13.0，4 维打分）+ 39 题 test-prompts
 - **3 个自动化脚本**（v2.13.0：check-latex / extract-equation / diff-case）
 
 ---
@@ -105,7 +105,7 @@
 
 每次对话开始时，Skill 会先确认你是**学生本人**还是**家长/老师**，然后自动切换对应模式。
 
-### 13 条硬约束速查（v2.13.2+）
+### 16 条硬约束速查（v2.14.0+）
 
 完整版见 `references/constraints-quick-ref.md`。**所有 if-then 必执行，不可跳过。**
 
@@ -230,43 +230,59 @@ python ~/.workbuddy/skills/k12-math-tutor/scripts/extract-equation.py "鸡兔同
 ## 文件结构
 
 ```
-k12-math-tutor/                            # v2.13.0
-├── SKILL.md                               # 主 Skills 文件（12KB，加载钩子+约束速查）
+k12-math-tutor/                            # v2.17.0
+├── SKILL.md                               # 主 Skills 文件（加载钩子+约束速查+references索引）
 ├── README.md                              # 本文件
-├── test-prompts.json                      # 测试用例集
+├── test-prompts.json                      # 测试用例集（39题）
 ├── evals/
 │   └── eval-set.md                        # 20题活体测试（4维打分）
 ├── scripts/
 │   ├── check-latex.py                     # 35个 LaTeX 黑名单扫描
 │   ├── extract-equation.py                # 30+关键词→考点→方法论→年级匹配
 │   └── diff-case.py                       # 6维方法论偏离对比
-└── references/                            # 14个参考资产
-    ├── constraints-quick-ref.md           # 13条硬约束卡片（v2.13.2更新）
+└── references/                            # 23+个参考资产
+    ├── constraints-quick-ref.md           # 16条硬约束卡片
+    ├── grade-quick-ref.md                 # 1-12年级核心知识点速查
+    ├── grade-curriculum-map.md            # 1-6年级知识点与算理对照表
+    ├── comprehensive-knowledge-base.md     # 小学数学全量知识库
+    ├── junior-math-review-compendium.md   # 初中数学中考总复习知识体系（26章）★v2.16.0
+    ├── curriculum-standard-2022.md        # 课标2022核心内容
+    ├── hs-math-curriculum-2017.md         # 高中数学课标2017版
+    ├── hs-math-review-compendium.md       # 高中数学五册深度萃取（18章）★v2.17.0
+    ├── exam-bank.md                       # 全学段试卷索引
     ├── methodology-hu-xiaoqun.md          # 胡小群方法论（含快速调用矩阵）
     ├── methodology-xuanba.md              # 昍爸方法论（含快速调用矩阵）
     ├── methodology-xuanba-advanced.md    # 昍爸进阶方法论（含快速调用矩阵）
+    ├── life-scene-math.md                 # 8个生活场景与数学概念对照表
+    ├── core-formula-teaching-scripts.md   # 12核心公式5步教学话术
+    ├── xuanba-problem-bank.md             # 23道经典例题库
     ├── methodology-zixian.md              # 子贤老师方法论（含快速调用矩阵）
     ├── seligman-positive-parenting.md     # 塞利格曼积极教养（含快速调用矩阵）
-    ├── grade-curriculum-map.md            # 1-6年级知识点与算理对照表
-    ├── grade-quick-ref.md                 # 1-12年级核心知识点速查
-    ├── comprehensive-knowledge-base.md     # 小学数学全量知识库
-    ├── curriculum-standard-2022.md        # 课标2022核心内容
-    ├── hs-math-curriculum-2017.md         # 高中数学课标2017版
     ├── olympiad-cases.md                  # 奥数经典题库
-    ├── gotchas.md                         # 失败模式库 G1-G27 + A1-A5（飞轮追加）
+    ├── gotchas.md                         # 失败模式库 G1-G29 + A1-A5（飞轮追加）
     ├── case-studies.md                    # 5维精选案例
-    ├── anti-patterns.md                   # 9个已退休反例（v2.12.0新增）
+    ├── anti-patterns.md                   # 9个已退休反例
     ├── latex-guide.md                     # LaTeX数学公式输出规范
     ├── question-design.md                 # 出题规范
     ├── socratic-depth-algorithm.md        # 追问深度算法
-    ├── skill-health.md                    # 月度评估记录模板（v2.13.0新增）
+    ├── skill-health.md                    # 月度评估记录模板
     ├── p3-review-mechanism.md             # P3 定期回顾机制
-    └── tutor-log.md                       # 辅导记录模板（P3 回顾用）
+    └── tutor-log.md                       # 辅导记录模板
 ```
 
 ---
 
 ## 版本演进
+
+**v2.17.0** — 高中知识体系入库：合并人教A版五册深度萃取（必修一·二 + 选必一·二·三）为 `references/hs-math-review-compendium.md`（3085行，18章，含核心概念群+思想方法+教学暗线+高考转化+易错警示+公式速查），清理选必一重复段+全部"复制"标记，补齐小学→初中→高中三段核心知识库闭环。
+
+**v2.16.0** — 初中知识体系入库：整合《中考数学总复习资料完整版》26章 +《初中数学知识点总结大全》，新增 `references/junior-math-review-compendium.md`（含知识点+课标+考点+典型易错+跨学段衔接表），补齐小学→初中→高中三段知识库闭环。
+
+**v2.14.2** — 昍爸深化：①新增「刷题三原则」和「刷题五步法」（质量>数量 / 先好后快 / 算理先于刷题）② `references/xuanba-problem-bank.md` 23道经典例题库（按年级+方法论分类+引导链+变式）。
+
+**v2.14.1** — 昍爸深化：新增 `references/core-formula-teaching-scripts.md`（12核心公式逐公式5步教学话术），配合约束2「公式教学强制查12公式话术」。
+
+**v2.14.0** — P1 进化：①新增约束14「生活场景自动匹配」（≤4年级必选≥1个生活场景嵌入引导脚本）+ `references/life-scene-math.md` ②新增约束15「内驱力三重境界」（有趣→有用→成就感）③新增约束16「四层检验法」（会做→会讲→会变→会出）④解题八步法完整展开表嵌入 SKILL.md。
 
 **v2.13.0** — P2 进化：①新增 `evals/eval-set.md`（20题活体测试4维打分）②新增 `scripts/`（check-latex / extract-equation / diff-case 三个 .py 自动化）③新增 `references/skill-health.md` 月度评估模板 ④SKILL.md 头部加 evals/scripts 索引 ⑤gotchas 飞轮已扩到 G27。
 

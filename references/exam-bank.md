@@ -12,10 +12,12 @@
 | 小学（全量知识库） | `comprehensive-knowledge-base.md` | 小学数学全量知识库（64页人教版PDF整理，405行） |
 | 小学（课标2022） | `curriculum-standard-2022.md` | 课标2022核心内容（DeepRead OCR提取，696行） |
 | 小学（年级知识点映射） | `grade-curriculum-map.md` | 1-6年级知识点与算理对照表（147行） |
-| 初中（知识衔接） | 见下方说明 ⬇ | 初中段内容由小学知识库向上延伸 + 高中课标向下衔接覆盖，暂无独立初中文件 |
+| 初中（知识衔接） | `junior-math-review-compendium.md` | 初中数学中考总复习知识体系（26章，含知识点+课标+考点+典型易错）★v2.16.0 |
 | 高中（课标2017） | `hs-math-curriculum-2017.md` | 高中数学课标2017版2020年修订全文（6074行） |
+| 高中（知识体系） | `hs-math-review-compendium.md` | 高中数学五册深度萃取（18章，含核心概念群+思想方法+教学暗线+高考转化+易错警示+公式速查）★v2.17.0 |
 | 跨阶段衔接 | `SKILL.md` → 约束5（小初高一体化） | 跨阶段知识点螺旋上升映射 |
 | 奥数例题 | `olympiad-cases.md` | 奥数经典题库（7大类型完整例题） |
+| 昍爸例题库 | `xuanba-problem-bank.md` | 昍爸方法论提取的 23 道经典例题（按年级+方法论分类，v1.0.0） |
 
 ---
 
@@ -23,8 +25,8 @@
 
 ### 场景1：作业答疑
 - **小学**：读 `comprehensive-knowledge-base.md` 对应章节，或 `grade-curriculum-map.md` 查知识点算理
-- **初中**：读 `comprehensive-knowledge-base.md`（向上查前置知识）+ `hs-math-curriculum-2017.md`（向下查高中衔接），配合 SKILL.md「跨阶段衔接」约束
-- **高中**：读 `hs-math-curriculum-2017.md` 对应模块
+- **初中**：读 `junior-math-review-compendium.md`（26章中考总复习）+ `comprehensive-knowledge-base.md`（向上查前置知识）+ `hs-math-curriculum-2017.md`（向下查高中衔接），配合 SKILL.md「跨阶段衔接」约束
+- **高中**：读 `hs-math-review-compendium.md`（五册18章深度萃取）+ `hs-math-curriculum-2017.md`（课标对应模块）
 - **跨阶段**：读 `SKILL.md` "约束5：小初高一体化" 章节
 
 ### 场景2：备考复习
@@ -33,6 +35,7 @@
 
 ### 场景3：举一反三检验
 - 从 `olympiad-cases.md` 选取同类型例题
+- 从 `xuanba-problem-bank.md` 按年级+方法论标签选变式题（每道题含 L1/L2/L3 三层变式）
 - 或基于知识库文件中的例题，要求学生独立讲解
 
 ### 场景4：算理讲解
