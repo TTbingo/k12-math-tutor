@@ -2,7 +2,7 @@
 title: "K12 反例库（9 个已退休案例 + 反例示范）"
 version: 2.12.0
 last_updated: 2026-06-21
-retired_from: "case-studies.md（原 14 例，v2.12.0 砍到 5 例）"
+retired_from: "case-studies.md(原 14 例，v2.12.0 砍到 5 例)"
 ---
 
 # 反例库（已退休的 9 个案例）

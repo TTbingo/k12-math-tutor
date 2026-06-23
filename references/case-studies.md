@@ -78,7 +78,7 @@ retired_cases: 9  # 已迁移到 references/anti-patterns.md
 - 三年级：路程 = 速度 × 时间（一个量）
 - 五年级：相遇（速度和）= 距离÷（甲+乙）
 - 五年级：追及（速度差）= 距离÷（甲-乙）
-- 初中：二元一次方程（设 t 时间，列 60t+40t=500）
+- 初中：二元一次方程(设 t 时间，列 60t+40t=500)
 - 核心不变量：**单位时间距离变化 = 两人速度的叠加**（和或差）
 
 ---
@@ -133,7 +133,7 @@ retired_cases: 9  # 已迁移到 references/anti-patterns.md
 5. 真正的核心：**用"暂时性 + 特定情境 + 可改变"重构孩子解释风格**
 
 **10 行引导脚本**（家长照着念）：
-1. "你考 65 分是不是很难过？"（先共情，G4 联动）
+1. "你考 65 分是不是很难过？"(先共情，G4 联动)
 2. "想不想和我一起看看是**哪一类**没考好？"（**三问法**定位）
 3. "是计算错了？读题错了？还是知识点本来就没懂？"
 4. "好，我们拿这张卷子扫一遍——你能找出 3 个**你本来能对**的题吗？"
@@ -196,7 +196,7 @@ retired_cases: 9  # 已迁移到 references/anti-patterns.md
 
 ## 🔗 关联文件
 
-- `references/anti-patterns.md` —— 9 个已退休案例 + 反例示范（搭配 G1-G24 gotchas）
+- `references/anti-patterns.md` —— 9 个已退休案例 + 反例示范(搭配 G1-G24 gotchas)
 - `references/constraints-quick-ref.md` —— 13 条硬约束速查卡
 - `references/gotchas.md` —— 29 个失败模式库
-- `references/methodology-*.md` —— 4 套方法论完整版（含快速调用矩阵 v2.12.0+）
+- `references/methodology-*.md` —— 4 套方法论完整版(含快速调用矩阵 v2.12.0+)
