@@ -93,6 +93,7 @@ def check_versions():
 
 # ─── 2. 约束计数 ──────────────────────────────────────────
 def check_constraint_count(content):
+    """检查 SKILL.md 约束计数 + 全仓「N条」引用一致性"""
     print("\n🔢 约束计数")
     # Find header N
     m_header = re.search(r'## 📋 (\d+) 条硬约束', content)
@@ -120,9 +121,41 @@ def check_constraint_count(content):
     actual_rows = len(re.findall(r'^\|\s*\*\*\d+\*\*\s*\|', table_body, re.MULTILINE))
 
     if actual_rows == declared:
-        log_ok(f"约束计数一致: 标题 {declared}条 = 实际 {actual_rows}条")
+        log_ok(f"SKILL.md 约束计数一致: 标题 {declared}条 = 实际 {actual_rows}条")
     else:
-        log_error(f"约束计数不一致: 标题 {declared}条 ≠ 实际 {actual_rows}条")
+        log_error(f"SKILL.md 约束计数不一致: 标题 {declared}条 ≠ 实际 {actual_rows}条")
+
+    # ─── 2b. 交叉验证 constraints-quick-ref.md ───
+    cqr = SKILL_DIR / "references" / "constraints-quick-ref.md"
+    if cqr.exists():
+        cqr_content = cqr.read_text(encoding="utf-8")
+        # Count constraint sections: "## 约束 N｜" or "## 约束 N（"
+        cqr_constraints = len(re.findall(r'^## 约束\s+\d+[｜(（]', cqr_content, re.MULTILINE))
+        if cqr_constraints == declared:
+            log_ok(f"constraints-quick-ref.md 约束计数一致: {cqr_constraints}条")
+        else:
+            log_error(f"constraints-quick-ref.md 约束计数不一致: {cqr_constraints}条 ≠ SKILL.md 声明的 {declared}条")
+
+    # ─── 2c. 全仓扫描「N条」引用 ───
+    print("   🔍 全仓扫描「N条」引用...")
+    all_md = list(SKILL_DIR.rglob("*.md"))
+    stale_refs = []
+    for fpath in all_md:
+        if '.git' in fpath.parts:
+            continue
+        fc = fpath.read_text(encoding="utf-8")
+        # Find all "N条" / "N 条" patterns
+        for m in re.finditer(r'(\d+)\s*条\s*(硬约束|约束)', fc):
+            found_n = int(m.group(1))
+            if found_n != declared:
+                rel = fpath.relative_to(SKILL_DIR)
+                stale_refs.append(f"{rel}:{fc[:m.start()].count(chr(10))+1} 「{m.group(0)}」应为{declared}条")
+
+    if stale_refs:
+        for s in stale_refs:
+            log_error(f"残留旧引用: {s}")
+    else:
+        log_ok(f"全仓「{declared}条」引用一致，零残留")
 
 
 # ─── 3. References 文件存在性 & frontmatter version ─────────
