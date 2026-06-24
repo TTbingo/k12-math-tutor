@@ -13,8 +13,7 @@
 | 小学（课标2022） | `curriculum-standard-2022.md` | 课标2022核心内容(DeepRead OCR提取，696行) |
 | 小学（年级知识点映射） | `grade-curriculum-map.md` | 1-6年级知识点与算理对照表（147行） |
 | 初中（知识衔接） | `junior-math-review-compendium.md` | 初中数学中考总复习知识体系（26章，含知识点+课标+考点+典型易错）★v2.16.0 |
-| 高中（课标2017） | `hs-math-curriculum-2017.md` | 高中数学课标2017版2020年修订全文（5682行，2026-06-23 替换为高质量扫描版） |
-| 高中（知识体系） | `hs-math-review-compendium.md` | 高中数学五册深度萃取（18章，含核心概念群+思想方法+教学暗线+高考转化+易错警示+公式速查）★v2.17.0 |
+| 高中（知识体系+课标） | `hs-math-review-compendium.md` | 高中数学五册深度萃取（18章，含核心概念群+思想方法+教学暗线+高考转化+易错警示+公式速查，已覆盖课标要求）★v2.17.0 |
 | 跨阶段衔接 | `SKILL.md` → 约束5（小初高一体化） | 跨阶段知识点螺旋上升映射 |
 | 奥数例题 | `olympiad-cases.md` | 奥数经典题库（7大类型完整例题） |
 | 昍爸例题库 | `xuanba-problem-bank.md` | 昍爸方法论提取的 23 道经典例题(按年级+方法论分类，v1.0.0) |
@@ -25,13 +24,13 @@
 
 ### 场景1：作业答疑
 - **小学**：读 `comprehensive-knowledge-base.md` 对应章节，或 `grade-curriculum-map.md` 查知识点算理
-- **初中**：读 `junior-math-review-compendium.md`（26章中考总复习）+ `comprehensive-knowledge-base.md`（向上查前置知识）+ `hs-math-curriculum-2017.md`（向下查高中衔接），配合 SKILL.md「跨阶段衔接」约束
-- **高中**：读 `hs-math-review-compendium.md`（五册18章深度萃取）+ `hs-math-curriculum-2017.md`（课标对应模块）
+- **初中**：读 `junior-math-review-compendium.md`（26章中考总复习）+ `comprehensive-knowledge-base.md`（向上查前置知识）+ `hs-math-review-compendium.md`（向下查高中衔接），配合 SKILL.md「跨阶段衔接」约束
+- **高中**：读 `hs-math-review-compendium.md`（五册18章深度萃取，已含课标对应模块）
 - **跨阶段**：读 `SKILL.md` "约束5：小初高一体化" 章节
 
 ### 场景2：备考复习
 - 期末复习：读对应学段的知识体系文件
-- 中考/高考总复习：优先读 `curriculum-standard-2022.md` / `hs-math-curriculum-2017.md`
+- 中考/高考总复习：优先读 `curriculum-standard-2022.md`（义务教育）/ `hs-math-review-compendium.md`（高中）
 
 ### 场景3：举一反三检验
 - 从 `olympiad-cases.md` 选取同类型例题
@@ -61,10 +60,10 @@
 
 | 主题 | 文件 | 位置 |
 |------|------|------|
-| 必修课程 | `hs-math-curriculum-2017.md` | 一、必修课程 |
-| 选择性必修 | `hs-math-curriculum-2017.md` | 二、选择性必修课程 |
-| 选修课程 | `hs-math-curriculum-2017.md` | 三、选修课程 |
-| 新课标对照 | `hs-math-curriculum-2017.md` | 四、新课标与旧高考对照 |
+| 必修课程 | `hs-math-review-compendium.md` | 全书战略定位→第一册/第二册 |
+| 选择性必修 | `hs-math-review-compendium.md` | 全书战略定位→第三册/第四册/第五册 |
+| 选修课程 | `hs-math-review-compendium.md` | 全书战略定位 |
+| 课标与高考 | `hs-math-review-compendium.md` | 每章「高考转化」小节 |
 
 ---
 

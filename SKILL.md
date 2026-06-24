@@ -6,7 +6,7 @@ description: |
   Do not load when: 纯公式查询、高等数学、考研数学、奥赛冲刺、教学管理/排课/教务。
   识别关键词：小学/初中/高中+数学、鸡兔同笼、奥数、算理、数感、验算、一题多解、几何辅助线、思维训练、内驱力、情绪翻译机、解释风格、ABCDE、考试挫败、数学焦虑、家长会、家校沟通、跨阶段衔接、小升初、初升高。
   Output: 一道题的家长辅导指南（六合一：题目解析+一题多解+难点预判+引导脚本+知识脉络+延伸练习），或一节概念微课（导入+探究+例题+小结+作业），或一份家长情绪应对话术(情绪翻译机+3P+ABCDE)。
-version: 2.17.0
+version: 2.18.4
 author: "WorkBuddy · 基于胡小群老师、昍爸、子贤老师、塞利格曼的公开方法论"
 allowed-tools: Read,Write,WebSearch,WebFetch
 ---
@@ -37,7 +37,7 @@ allowed-tools: Read,Write,WebSearch,WebFetch
 | 孩子答错 | 是否跳过算理？是否给变式检验"真懂"？ | G_new：算理/变式 |
 | 家长嫌啰嗦 | 六项是否全堆？是否挤牙膏？ | G_new：输出结构 |
 | 输出被截断 | 字数超 2000？精简版/完整版是否双发？ | G_new：微信长度 |
-| LaTeX 没渲染 | 全文搜 `\` → 改 Unicode | G_new：符号规范 |
+| LaTeX 没渲染 | 全文搜 `\` → 改 Unicode | G_new：符号规范（见 latex-guide.md） |
 | 假性理解 | 孩子说"我懂了"但变式不会 | G3（已有） |
 | 情绪崩溃仍讲题 | 情绪翻译机/ABCDE 启动了吗？ | G19/G21（已有） |
 | 家长只能"你真棒" | 完整版有「每步进展的夸夸话术」吗？ | G28(v2.13.1 新增) |
@@ -71,6 +71,7 @@ allowed-tools: Read,Write,WebSearch,WebFetch
 | **14** | 生活场景自动匹配 | ≤4年级必选≥1个生活场景嵌入引导脚本(v2.14.0 新增，源自昍爸生活场景数学化) | → §14 |
 | **15** | 内驱力三重境界 | 有趣→有用→成就感，家长模式每步标注境界 + 没兴趣时降级到"有趣"(v2.14.0 新增，源自昍爸内驱力方法论) | → §15 |
 | **16** | 四层检验法 | 会做→会讲→会变→会出，至少过前两层才"真懂"(v2.14.0 新增，源自昍爸真懂判定标准) | → §16 |
+| **17** | 错题本主动触发 | 每道题后必问是否加入错题本，生成双格式诊断卡（Markdown归档+HTML展示）(v2.18.0 新增) | → §17 |
 
 ---
 
@@ -100,6 +101,10 @@ allowed-tools: Read,Write,WebSearch,WebFetch
    - **刷题五步法**：计时做题→验算检查→批改→错题分析（粗心/真不会/卡在哪）→针对漏洞练→第二天重做错题
    - **禁止**：跳过错题分析直接刷下一批 / 只做会做的题 / 「刷完就行」心态
 6. **反馈总结**：肯定过程 → 点明思路 → 留悬念
+7. **错题本诊断**（约束17）：辅导结束后必问「这道题要加到错题本里吗？」
+   - 家长确认加入 → 三层诊断（🟡基础技能 / 🟢前置知识 / 🔴数学思维）+ 靶向建议 → 双格式输出（Markdown归档 + HTML展示）
+   - 🟢前置知识层进一步细分：🟢-1概念模糊 / 🟢-2公式记错 / 🟢-3知识点断层
+   - 详见 `references/mistake-bank.md`
 
 ### 方法论快速决策
 
@@ -207,8 +212,7 @@ allowed-tools: Read,Write,WebSearch,WebFetch
 | `comprehensive-knowledge-base.md` | 小学数学全量知识库 |
 | `junior-math-review-compendium.md` | **初中数学中考总复习知识体系（26章，含知识点+课标+考点+典型易错）** |
 | `curriculum-standard-2022.md` | 义务教育数学课标2022版 |
-| `hs-math-curriculum-2017.md` | 高中数学课标2017版 |
-| `hs-math-review-compendium.md` | **高中数学五册深度萃取（18章，含核心概念群+思想方法+教学暗线+高考转化+易错警示+公式速查）** |
+| `hs-math-review-compendium.md` | **高中数学五册深度萃取（18章，含核心概念群+思想方法+教学暗线+高考转化+易错警示+公式速查，已覆盖课标要求）** |
 | `grade-curriculum-map.md` | 1-6年级知识点+算理对照 |
 | `grade-quick-ref.md` | 1-12年级知识点速查 + K12思想方法阶梯式步进脉络（算理五级阶梯/十二种核心方法/十条跨学段暗线/昍爸六大思维落地锚点/胡小群算理追问） |
 
@@ -229,9 +233,10 @@ allowed-tools: Read,Write,WebSearch,WebFetch
 |------|----------|
 | `socratic-depth-algorithm.md` | 追问深度算法(L0-L4)+三层响应阈值 |
 | `question-design.md` | 出题规范（不写"如图"+默认不给答案） |
-| `latex-guide.md` | LaTeX 输出规范（**微信/低龄禁用**） |
+| `latex-guide.md` | 数学符号书写与排版规范（**微信优先 Unicode**） |
 | `p3-review-mechanism.md` | P3 定期回顾机制 |
-| **`constraints-quick-ref.md`** | **13 条硬约束速查卡(卡片化，含每条反例/正例/联动/对应 gotcha)** |
+| **`constraints-quick-ref.md`** | **16 条硬约束速查卡(卡片化，含每条反例/正例/联动/对应 gotcha)** |
+| `mistake-bank.md` | **错题难题管理模块**（子贤三层诊断法 + 间隔复习五步法 + 双格式输出 + 学生自学模式 + 4 种拒绝场景，约束17引用） |
 
 ### 案例与进化
 | 文件 | 一句话说明 |
@@ -247,7 +252,7 @@ allowed-tools: Read,Write,WebSearch,WebFetch
 |------|----------|
 | `evals/eval-set.md` | **20 题活体测试集**(4 维打分 x 0-3，月度跑一次量化改造效果) |
 | `references/skill-health.md` | **月度评估记录**(每次跑 eval 后填分数，对比版本变化) |
-| `scripts/check-latex.py` | **LaTeX 残留扫描**(防 G10 复发，扫所有 .md 检测反斜杠命令) |
+| `scripts/check-latex.py` | **LaTeX 残留扫描**(防 G10 复发，扫所有 .md 检测未渲染的反斜杠命令) |
 | `scripts/extract-equation.py` | **算理考点识别**（输入题目文本 → 自动匹配考点+方法论+年级） |
 | `scripts/diff-case.py` | **方法论偏离对比**（两次同类型题辅导输出对比，标出偏离维度） |
 
@@ -275,17 +280,21 @@ allowed-tools: Read,Write,WebSearch,WebFetch
 14. **家长模式必预判情绪**（不等孩子哭了再补）
 15. **家长模式六合一**（详见约束11）
 16. **微信双输出**(精简版+完整版 HTML)
-17. **禁用 LaTeX**(× ÷ ≥ ≤ ≠，分数 a/b；微信不渲染)
+17. **微信优先 Unicode**(× ÷ ≥ ≤ ≠ 用 Unicode，避免 `\frac` 等 LaTeX 源码残留)
 18. **≤4年级必须从生活场景切入**（约束14，先生活→后抽象）
 19. **延伸练习必须标注 L1/L2/L3 层次**（约束11 六合一扩展，禁止只出换数字题）
 20. **讲完必过四层检验**（约束16，会做→会讲→会变→会出）
+21. **错题本诊断卡双输出**（Markdown归档 + HTML展示，HTML必须适配手机微信，字体≥1em，层次标签🟡🟢🔴）
 
 ---
 
 ## 元信息
 
-- **版本**：2.17.0（2026-06-23）
-- **变更**：#37 高中知识体系入库——合并人教A版五册深度萃取（必修一·二 + 选必一·二·三）为 references/hs-math-review-compendium.md（3085行，18章，含核心概念群+思想方法+教学暗线+高考转化+易错警示+公式速查），清理选必一重复段+全部"复制"标记，补齐 k12-math-tutor 的高中段核心知识库
-- **审计**：v2.17.0 Luban 审计通过
+- **版本**：2.18.4（2026-06-24）
+- **变更**：#41 删除 `hs-math-curriculum-2017.md`（质量堪忧+与 hs-math-review-compendium.md 重叠）；SKILL.md/README.md/curriculum-standard-2022.md/exam-bank.md 全部引用同步清除或重定向至 hs-math-review-compendium.md
+- **变更**：#40 mistake-bank.md v1.3 Step 6 跟进复习完整流程——间隔复习五步法（入库定周期→到期提醒→变式出题+降维→结果回写→掌握归档），INDEX.md 新增复习次数/下次复习/状态三字段，与 P3 机制衔接
+- **变更**：#39 mistake-bank.md v1.2 路径配置化——硬编码本地路径改为 `${MISTAKE_BANK_DIR}` 变量，开源友好；归档目录从 06_临时归档 迁移至 05_技能开发/k12-math-tutor/mistake-bank/；新增路径配置区块（本机默认 + 开源用户两种场景）
+- **变更**：#38 错题难题管理模块 v1.1 升级——references/mistake-bank.md 新增学生自学模式（self-study）+ 4 种拒绝场景处理流程 + 24h 文件缓存机制 + 🟢断层场景加粗强烈建议（Q1-B/Q2-A/Q3-B 选择），references 索引同步更新
+- **审计**：Luban 审计 v2.18.4（2026-06-24，94分，待提交）
 - **作者**：WorkBuddy · 基于胡小群老师、昍爸、子贤老师、塞利格曼的公开方法论
 - **许可**：基于公开方法论，引用请注明原作者

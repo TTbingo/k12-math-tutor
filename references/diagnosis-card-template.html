@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>错题诊断卡模板</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-size: 1.1em;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background: #f5f5f5;
+      padding: 12px;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    h1 {
+      font-size: 1.3em;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 12px;
+      color: #111;
+    }
+    h2 {
+      font-size: 1.1em;
+      font-weight: 600;
+      margin: 12px 0 8px;
+      padding-left: 8px;
+      border-left: 4px solid #3B82F6;
+      color: #222;
+    }
+    .meta {
+      font-size: 0.95em;
+      color: #666;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    /* 层次标签色块 */
+    .level-tag {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1.05em;
+      margin: 4px 0;
+    }
+    .level-yellow { background: #FEF3C7; color: #92400E; }
+    .level-green  { background: #D1FAE5; color: #065F46; }
+    .level-blue   { background: #DBEAFE; color: #1E40AF; }
+    .diagnosis-main {
+      text-align: center;
+      padding: 12px;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+    .diagnosis-detail {
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin: 8px 0;
+      font-size: 1em;
+      line-height: 1.7;
+    }
+    .suggestion-card {
+      background: #f0fdf4;
+      border-left: 4px solid #10B981;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin: 8px 0;
+      font-size: 1em;
+      line-height: 1.7;
+    }
+    .review-note {
+      background: #fffbeb;
+      border: 1px dashed #F59E0B;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin: 12px 0 4px;
+      font-size: 0.95em;
+      color: #92400E;
+    }
+    ul, ol { padding-left: 1.4em; margin: 6px 0; }
+    li { margin: 4px 0; }
+    code {
+      background: #f3f4f6;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.95em;
+    }
+    .footer {
+      text-align: center;
+      font-size: 0.85em;
+      color: #999;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>📐 错题诊断卡</h1>
+  <div class="meta">
+    2026-06-23 &nbsp;|&nbsp; 小学五年级 &nbsp;|&nbsp; 分数运算
+  </div>
+
+  <!-- 题目 -->
+  <div class="diagnosis-detail">
+    <strong>题目：</strong>计算：$\frac{3}{4} + \frac{1}{6}$
+  </div>
+
+  <!-- 三层诊断 -->
+  <h2>🔍 三层诊断</h2>
+
+  <div class="diagnosis-main level-green">
+    <span class="level-tag level-green">🟢 前置知识层（公式记错/混淆）</span>
+  </div>
+
+  <div class="diagnosis-detail">
+    <strong>具体诊断：</strong><br>
+    孩子知道要"通分"，但通分时用错方法——用了 <code>4×6=24</code> 作公分母（算了最小公倍数），而不是先找最小公倍数 <code>12</code>。<br><br>
+    属于 🟢-2 子层（公式记错/用错场景）：通分方法会，但没掌握"先找最小公倍数"的简化技巧，导致计算量大、容易出错。
+  </div>
+
+  <div class="diagnosis-main level-yellow" style="margin-top:10px;">
+    <span class="level-tag level-yellow">🟡 基础技能层（计算粗心）</span>
+  </div>
+
+  <div class="diagnosis-detail">
+    <strong>次要层次：</strong><br>
+    通分后分子算错：$\frac{3}{4}=\frac{9}{12}$ 算成了 $\frac{10}{12}$。
+  </div>
+</div>
+
+<!-- 靶向建议 -->
+<div class="card">
+  <h2>💊 靶向建议</h2>
+
+  <div class="suggestion-card">
+    <strong>🟢 前置知识层 → 建议：</strong>
+    <ul>
+      <li>回教材：五年级上册「分数的加法和减法」章节</li>
+      <li>用昍爸核心公式 5 步教学话术，重新讲「通分为什么先找最小公倍数」</li>
+      <li>练习：只用最小公倍数通分的专项训练（10 道）</li>
+    </ul>
+  </div>
+
+  <div class="suggestion-card" style="border-left-color:#F59E0B;">
+    <strong>🟡 基础技能层 → 建议：</strong>
+    <ul>
+      <li>每天 5 分钟通分速算练习（限时做 20 道）</li>
+      <li>检查习惯：通分后先口算检验分子是否正确</li>
+    </ul>
+  </div>
+
+  <div class="review-note">
+    📅 <strong>建议复习时间：</strong>3 天后<br>
+    到时间了告诉我，我帮你出一道类似题检验一下。
+  </div>
+</div>
+
+<div class="footer">
+  K12 错题本 · 子贤方法论 · v2.18.0
+</div>
+
+</body>
+</html>
