@@ -51,7 +51,7 @@ def analyze_content(text):
         '情绪预判关键词': [],
         '知识脉络学段': [],
         '字数': len(text),
-        '有LaTeX': bool(re.search(r'\\\\(times|div|frac|quad|leq|geq)', text)),
+        '有LaTeX': bool(re.search(r'\\(times|div|frac|quad|leq|geq)', text)),
         '有双发': '精简版' in text or '完整版' in text or 'HTML' in text,
     }
 

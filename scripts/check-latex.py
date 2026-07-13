@@ -13,6 +13,8 @@ check-latex.py — 扫描 K12 skill 所有 .md 文件，检测 LaTeX 残留
   - 报警：任何 \\command{...} 模式 -> [HIGH]
   - 报警：单独的 \\times \\div \\frac \\quad \\text \\left \\right -> [HIGH]
   - 允许：代码块内的 LaTeX（标记 [INFO]）
+  - 允许：文档文件中的 LaTeX 引用（标记 [INFO]）
+  - 允许：反引号内的 LaTeX 命令引用（标记 [INFO]）
 """
 
 import os
@@ -46,9 +48,23 @@ WHITELIST_PATTERNS = [
     r'\\\|',  # 表格管道转义
 ]
 
+# 文档白名单：这些文件本身就是在讨论 LaTeX，其中的 LaTeX 命令是教学内容而非残留
+DOCS_WHITELIST = {
+    'latex-guide.md',  # LaTeX 参考指南，讨论 LaTeX 命令是其用途
+}
+
+def is_in_backticks(line, cmd):
+    """检查 LaTeX 命令是否在反引号内（元引用，如 `\\frac`）"""
+    for m in re.finditer(r'`[^`]*`', line):
+        if cmd in m.group(0):
+            return True
+    return False
+
 def scan_file(filepath):
     """扫描单个文件，返回告警列表"""
     alerts = []
+    filename = os.path.basename(filepath)
+    is_docs_file = filename in DOCS_WHITELIST
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             lines = f.readlines()
@@ -64,8 +80,11 @@ def scan_file(filepath):
 
         for cmd in LATEX_COMMANDS:
             if cmd in line:
-                # 代码块内只标记 INFO
-                level = 'INFO' if in_code_block else 'HIGH'
+                # 代码块内、文档文件内、反引号内 → 标记 INFO（非实际残留）
+                if in_code_block or is_docs_file or is_in_backticks(line, cmd):
+                    level = 'INFO'
+                else:
+                    level = 'HIGH'
                 # 检查是否在白名单中
                 is_whitelisted = any(w in line for w in WHITELIST_PATTERNS)
                 if not is_whitelisted or cmd not in [r'\n', r'\t']:

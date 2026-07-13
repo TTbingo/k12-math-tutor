@@ -2,7 +2,7 @@
 
 > **不只做题，教你怎么教。** 把胡小群、昍爸、子贤老师三位数学教育实战派专家的辅导方法论，融合塞利格曼积极心理学，装进 AI Agent。
 
-[![Version](https://img.shields.io/badge/version-1.5.0-blue)](SKILL.md)
+[![Version](https://img.shields.io/badge/version-1.8.1-blue)](SKILL.md)
 [![Coverage](https://img.shields.io/badge/coverage-K12%20%E5%B0%8F%E5%88%9D%E9%AB%98%E4%B8%80%E4%BD%93%E6%88%90-green)](references/grade-quick-ref.md)
 [![License](https://img.shields.io/badge/License-Personal%20Use-orange)](#许可)
 
@@ -75,7 +75,7 @@
 
 ### 飞轮进化机制
 
-每次真实辅导中遇到失败模式 → 自动追加到 `gotchas.md`（G1-G37，35 条有效）→ 升级约束规则 → Skill 越用越准。配套三个子系统保证飞轮不腐化：
+每次真实辅导中遇到失败模式 → 自动追加到 `gotchas.md`（G1-G38，38 条）→ 升级约束规则 → Skill 越用越准。配套三个子系统保证飞轮不腐化：
 
 - **去重归并**：标题相似度 ≥80% 的 gotcha 自动合并，内容追加到主条目不丢失
 - **健康度扫描**：按触发频率分 🟢活跃 / 🟡休眠 / 🔴淘汰，淘汰项移入 `archive/` 释放编号
@@ -174,8 +174,10 @@ k12-math-tutor/
 ├── scripts/
 │   ├── check-latex.py                     # LaTeX 残留扫描（防 G10 复发）
 │   ├── extract-equation.py                # 关键词→考点→方法论匹配
-│   └── diff-case.py                       # 方法论偏离对比
-└── references/                            # 28 个参考资产
+│   ├── diff-case.py                       # 方法论偏离对比
+│   ├── verify-answer.py                   # 答案可逆验证（AST 安全求值器）
+│   └── validate-structure.py              # 通用 Skill 结构完整性校验
+└── references/                            # 29 个参考资产
     ├── constraints-quick-ref.md           # 17 条硬约束卡片
     ├── grade-quick-ref.md                 # 1-12 年级知识点 + K12 思想方法阶梯脉络
     ├── grade-curriculum-map.md            # 1-6 年级知识点与算理对照
@@ -194,7 +196,7 @@ k12-math-tutor/
     ├── xuanba-problem-bank.md             # 经典例题库
     ├── life-scene-math.md                 # 生活场景与数学对照
     ├── olympiad-cases.md                  # 奥数经典题库
-    ├── gotchas.md                         # 失败模式库 G1-G37（35条有效） + A1-A5
+    ├── gotchas.md                         # 失败模式库 G1-G38（38条） + A1-A5
     ├── case-studies.md                    # 精选案例
     ├── anti-patterns.md                   # 已退休反例
     ├── latex-guide.md                     # 数学符号书写与排版规范
@@ -203,8 +205,19 @@ k12-math-tutor/
     ├── skill-health.md                    # 月度评估模板
     ├── p3-review-mechanism.md             # 定期回顾机制
     ├── diagnosis-card-template.html       # 诊断卡 HTML 模板
+    ├── k12-skill-taxonomy.md              # K12 技能条目目录（87条，4域+2跨域×3学段）
     └── tutor-log.md                       # 辅导记录模板
 ```
+
+## 变更日志
+
+| 版本 | 日期 | 变更 |
+|------|------|------|
+| 1.8.1 | 2026-07-13 | 全项目审查修复：check-latex.py 白名单机制、diff-case.py 正则修复、版本号同步；新增 homepage/license 字段 |
+| 1.8.0 | 2026-07-13 | 安全修复：verify-answer.py 中 3 处 eval() → AST 安全求值器 + 双层白名单；新增 K12 技能条目目录（87条结构化技能）；新增 SkillHub 市场展示字段（slug/displayName/summary/tags） |
+| 1.7.0 | 2026-07-06 | 可视化图表交付工作流；SVG→HTML 三件套约束；自检清单第⑩项 |
+| 1.6.0 | 2026-06-29 | 约束系统升级（17条→G38）；诊断卡模板；错题本间隔复习五步法 |
+| 1.5.0 | 2026-06-24 | 小初高一体化知识库闭环；P3 定期回顾机制；飞轮进化机制 |
 
 ## 许可
 

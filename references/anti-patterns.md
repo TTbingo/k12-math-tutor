@@ -1,6 +1,6 @@
 ---
 title: "K12 反例库（9 个已退休案例 + 反例示范）"
-version: 1.5.0
+version: 1.8.1
 last_updated: 2026-06-24
 retired_from: "case-studies.md（原 14 例，砍到 5 例）"
 ---
