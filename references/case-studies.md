@@ -1,6 +1,6 @@
 ---
 title: "K12 经典启发案例库（精选 5 例）"
-version: 1.8.1
+version: 1.8.2
 last_updated: 2026-06-24
 total_cases: 5  # 由 14 例砍到 5 例
 retired_cases: 9  # 已迁移到 references/anti-patterns.md

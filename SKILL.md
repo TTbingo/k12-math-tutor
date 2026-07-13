@@ -9,7 +9,7 @@ description: |
   Do not load when: 纯公式查询、高等数学、考研数学、奥赛冲刺、教学管理/排课/教务。
   识别关键词：小学/初中/高中+数学、鸡兔同笼、奥数、算理、数感、验算、一题多解、几何辅助线、思维训练、内驱力、情绪翻译机、解释风格、ABCDE、考试挫败、数学焦虑、家长会、家校沟通、跨阶段衔接、小升初、初升高、孩子不自信、一错就放弃、辅导容易发火、数学畏难、一做就哭、怎么说都不听、亲子辅导冲突。
   Output: 家长辅导指南(六合一) / 概念微课 / 情绪应对话术，详见正文 §0 输出格式速查。
-version: 1.8.1
+version: 1.8.2
 author: "基于胡小群老师、昍爸、子贤老师、塞利格曼的公开方法论"
 allowed-tools: Read,Write,WebSearch,WebFetch
 homepage: "https://github.com/TTbingo/k12-math-tutor"
@@ -506,8 +506,8 @@ Step D: 可选——同时调 show_widget 供 Web 端用户内联查看（双通
 
 ## 元信息
 
-- **版本**：1.8.1（2026-07-13 全项目审查修复：check-latex.py 白名单机制消除误报、diff-case.py 正则 bug 修复、8 文件版本号同步、README/test-prompts 更新；新增 homepage/license frontmatter 字段）
-- **上版**：1.8.0（2026-07-13 K12 技能条目目录：新增 references/k12-skill-taxonomy.md，87条结构化技能条目覆盖4域+2跨域×3学段，每条含名称/描述/年级/标签四字段，附年级覆盖完整性矩阵与知识库映射表）
+- **版本**：1.8.2（2026-07-13 SkillHub changelog 修正 + homepage/license 字段同步发布；全项目审查修复：check-latex.py 白名单机制消除误报、diff-case.py 正则 bug 修复、8 文件版本号同步；新增 K12 技能条目目录 87 条）
+- **上版**：1.8.1（2026-07-13 全项目审查修复 + SkillHub 重新发布，changelog 缺失）
 - **上版**：1.6.0（2026-07-03 工作流重构：输出原子化——生成 HTML 和调 deliver_attachments 合并为同一轮动作，从根本上消除"说已发但没调工具"的空间。G36 修复方式从"外部 watchdog"改为"工作流重构"）
 - **作者**：WorkBuddy · 基于胡小群老师、昍爸、子贤老师、塞利格曼的公开方法论
 - **许可**：基于公开方法论，引用请注明原作者

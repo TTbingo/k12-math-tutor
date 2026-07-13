@@ -2,7 +2,7 @@
 
 > **不只做题，教你怎么教。** 把胡小群、昍爸、子贤老师三位数学教育实战派专家的辅导方法论，融合塞利格曼积极心理学，装进 AI Agent。
 
-[![Version](https://img.shields.io/badge/version-1.8.1-blue)](SKILL.md)
+[![Version](https://img.shields.io/badge/version-1.8.2-blue)](SKILL.md)
 [![Coverage](https://img.shields.io/badge/coverage-K12%20%E5%B0%8F%E5%88%9D%E9%AB%98%E4%B8%80%E4%BD%93%E6%88%90-green)](references/grade-quick-ref.md)
 [![License](https://img.shields.io/badge/License-Personal%20Use-orange)](#许可)
 
@@ -213,6 +213,7 @@ k12-math-tutor/
 
 | 版本 | 日期 | 变更 |
 |------|------|------|
+| 1.8.2 | 2026-07-13 | SkillHub changelog 修正发布；homepage/license 字段同步；全项目审查修复 |
 | 1.8.1 | 2026-07-13 | 全项目审查修复：check-latex.py 白名单机制、diff-case.py 正则修复、版本号同步；新增 homepage/license 字段 |
 | 1.8.0 | 2026-07-13 | 安全修复：verify-answer.py 中 3 处 eval() → AST 安全求值器 + 双层白名单；新增 K12 技能条目目录（87条结构化技能）；新增 SkillHub 市场展示字段（slug/displayName/summary/tags） |
 | 1.7.0 | 2026-07-06 | 可视化图表交付工作流；SVG→HTML 三件套约束；自检清单第⑩项 |

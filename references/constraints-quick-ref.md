@@ -1,6 +1,6 @@
 ---
 title: "K12 17 条硬约束速查卡"
-version: 1.8.1
+version: 1.8.2
 last_updated: 2026-06-24
 usage: "在辅导过程中碰到红线/反例/正例疑惑 → 速查本文件 → 不需要再回看 SKILL.md"
 ---
