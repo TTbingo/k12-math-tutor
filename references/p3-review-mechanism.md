@@ -1,5 +1,5 @@
 ---
-version: 1.8.2
+version: 1.8.6
 last_updated: 2026-07-01
 ---
 

@@ -18,22 +18,39 @@ import os
 import re
 import sys
 import json
+import argparse
 from pathlib import Path
 
-# Fix Windows GBK encoding for emoji output
-if sys.platform == "win32":
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+from _compat import setup_console
+setup_console()
+
+
+# ─── S6 统一容错读取 ───────────────────────────────────────
+def _read(path):
+    """utf-8 失败回退 gb18030；再失败返回 None（调用方 log_error 并跳过）。
+
+    旧版所有 read_text(encoding="utf-8") 无容错，一个 GBK/BOM 文件即
+    UnicodeDecodeError 拖垮整轮校验（后续检查项全部不执行）。
+    """
+    try:
+        return path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        try:
+            return path.read_text(encoding="gb18030")
+        except Exception:
+            return None
+    except OSError:
+        return None
 
 # ─── 路径解析 ──────────────────────────────────────────────
 def resolve_skill_dir():
-    """优先使用 --dir 参数，否则用脚本所在 Skill 目录"""
-    if "--dir" in sys.argv:
-        idx = sys.argv.index("--dir")
-        if idx + 1 < len(sys.argv):
-            return Path(sys.argv[idx + 1]).resolve()
-        else:
-            print("❌ --dir 需要指定路径")
-            sys.exit(1)
+    """S3：argparse 统一入口（旧版手撕 sys.argv，--dir 缺值静默、无 --help）"""
+    parser = argparse.ArgumentParser(description="Skill 结构完整性校验")
+    parser.add_argument("--dir", default=None,
+                        help="Skill 目录（默认脚本所在目录的上一级）")
+    args = parser.parse_args()
+    if args.dir:
+        return Path(args.dir).resolve()
     return Path(__file__).resolve().parent.parent
 
 SKILL_DIR = resolve_skill_dir()
@@ -59,7 +76,10 @@ def check_versions():
     if not skill_md.exists():
         log_error("SKILL.md 不存在")
         return None
-    content = skill_md.read_text(encoding="utf-8")
+    content = _read(skill_md)
+    if content is None:
+        log_error("SKILL.md 读取失败（编码异常）")
+        return None
     m = re.search(r'version:\s*([\d.]+)', content)
     skill_ver = m.group(1) if m else None
 
@@ -72,7 +92,10 @@ def check_versions():
     # README badge
     readme = SKILL_DIR / "README.md"
     if readme.exists():
-        rm = readme.read_text(encoding="utf-8")
+        rm = _read(readme)
+        if rm is None:
+            log_warn("README.md 读取失败（编码异常）")
+            rm = ""
         bm = re.search(r'badge/version-([\d.]+)', rm)
         readme_ver = bm.group(1) if bm else None
         if readme_ver and readme_ver == skill_ver:
@@ -88,7 +111,10 @@ def check_versions():
     tp = SKILL_DIR / "test-prompts.json"
     if tp.exists():
         try:
-            data = json.loads(tp.read_text(encoding="utf-8"))
+            raw = _read(tp)
+            if raw is None:
+                raise ValueError("编码异常")
+            data = json.loads(raw)
             tp_ver = data.get("version")
             if tp_ver and tp_ver == skill_ver:
                 log_ok(f"test-prompts.json 版本一致: {tp_ver}")
@@ -112,7 +138,10 @@ def check_cross_file_numbers():
     skill_md = SKILL_DIR / "SKILL.md"
     if not skill_md.exists():
         return
-    content = skill_md.read_text(encoding="utf-8")
+    content = _read(skill_md)
+    if content is None:
+        log_error("SKILL.md 读取失败（编码异常）")
+        return
 
     # ── 2a. 收集 SKILL.md 中的数值声明 ──
     # 模式：标题或正文中的 "N 条/N 个/N 步/N 层/N 种/N 项 + 语义标签"
@@ -149,59 +178,49 @@ def check_cross_file_numbers():
     stale_found = False
 
     # 构建搜索模式：对每个声明数值，在所有文件中找 "N 条/N 个/N 步..." 
-    for tag, (declared_num, _) in declarations.items():
-        unit_map = {
-            'constraint': '条',
-            'check_item': '条',
-            'step': '步',
-            'layer': '层',
-            'component': '个',
-            'type': '种',
-            'principle': '项',
-        }
-        unit = unit_map.get(tag, '条')
+    # 中文语义锚点：旧版用英文 tag 拼搜索模式（如 "17 条 constraint"）在中文文档中
+    # 永不命中，跨文件检查形同虚设却输出"零残留"。改为按 tag 映射回中文名词扫描。
+    tag_patterns = {
+        'constraint': r'(\d+)\s*条\s*(?:硬约束|约束|规则|铁律)',
+        'check_item': r'(\d+)\s*条\s*(?:检查项|自检项|审计项)',
+        'step':       r'(\d+)\s*步',
+        'layer':      r'(\d+)\s*层',
+        'component':  r'(\d+)\s*个\s*(?:阶段|模块|维度|核心)',
+        'type':       r'(\d+)\s*种\s*(?:模式|方法|类型|风格)',
+        'principle':  r'(\d+)\s*项\s*(?:原则|能力|要求)',
+    }
 
+    for tag, (declared_num, _) in declarations.items():
+        search_pattern = tag_patterns.get(tag)
+        if not search_pattern:
+            continue
         for fpath in all_md:
             if '.git' in fpath.parts:
                 continue
-            fc = fpath.read_text(encoding="utf-8")
+            fc = _read(fpath)
+            if fc is None:
+                log_error(f"{fpath.relative_to(SKILL_DIR)} 读取失败（编码异常），跳过数值检查")
+                continue
             rel = fpath.relative_to(SKILL_DIR)
 
-            # 搜索 "N 条约束" / "N条硬约束" 等变体
-            search_pattern = rf'(\d+)\s*{unit}\s*{tag}'
             for m in re.finditer(search_pattern, fc):
                 found_n = int(m.group(1))
                 if found_n != declared_num:
                     line_no = fc[:m.start()].count('\n') + 1
-                    log_error(f"{rel}:{line_no} 「{m.group(0)}」应为 {declared_num}{unit}（{tag}）")
-                    stale_found = True
-
-            # 额外：对 constraint，也搜 "约束" 不带 tag 的模式
-            if tag == 'constraint':
-                extra_pattern = rf'(\d+)\s*条\s*硬约束'
-                for m in re.finditer(extra_pattern, fc):
-                    found_n = int(m.group(1))
-                    if found_n != declared_num:
-                        line_no = fc[:m.start()].count('\n') + 1
-                        log_error(f"{rel}:{line_no} 「{m.group(0)}」应为 {declared_num}条")
+                    line_start = fc.rfind('\n', 0, m.start()) + 1
+                    is_header = fc[line_start:m.start()].lstrip().startswith('#')
+                    msg = f"{rel}:{line_no} 「{m.group(0)}」与声明值 {declared_num} 不一致（{tag}）"
+                    if is_header:
+                        # 标题是结构性声明，数值不一致视为断链
+                        log_error(msg)
                         stale_found = True
+                    else:
+                        # 正文提及可能只是局部语境（如"共 6 条子规则"），降级为警告
+                        log_warn(msg)
 
     if not stale_found:
         log_ok("全仓数值引用一致，零残留")
 
-    # ── 2c. 额外：通用「N 条」模糊扫描 ──
-    # 对不匹配上面精确模式的 "N 条" 做模糊警告
-    for fpath in all_md:
-        if '.git' in fpath.parts:
-            continue
-        fc = fpath.read_text(encoding="utf-8")
-        rel = fpath.relative_to(SKILL_DIR)
-        for m in re.finditer(r'(\d+)\s*条\s*(硬约束|约束|规则|铁律)', fc):
-            found_n = int(m.group(1))
-            if 'constraint' in declarations:
-                if found_n != declarations['constraint'][0]:
-                    # Already reported in 2b
-                    pass
 
 
 # ─── 3. References 文件完整性（通用）──────────────────────
@@ -209,30 +228,62 @@ def check_references():
     print("\n📁 References 文件完整性")
 
     refs_dir = SKILL_DIR / "references"
+
+    # Collect references from SKILL.md table（S2 修正：.py 脚本引用校验独立于
+    # references/ 目录存在与否——scripts/ 与 references/ 是平级目录，旧结构在
+    # references/ 缺失时整体 return，会连带跳过 scripts/*.py 断链检测）
+    skill_md = SKILL_DIR / "SKILL.md"
+    if not skill_md.exists():
+        if not refs_dir.exists():
+            log_warn("references/ 目录不存在，跳过")
+        return
+    content = _read(skill_md)
+    if content is None:
+        log_error("SKILL.md 读取失败（编码异常）")
+        return
+
+    # .py 引用（如 scripts/verify-answer.py）统一按 SKILL_DIR 相对路径校验（S2：
+    # 旧版正则只覆盖 .md，`scripts/extract-equation.py` 这类真实引用从不被校验）
+    py_refs = set(re.findall(r'`((?:[a-zA-Z0-9_\-]+/)*[a-zA-Z0-9_\-]+\.py)`', content))
+    for ref in sorted(py_refs):
+        if (SKILL_DIR / ref).exists():
+            log_ok(f"{ref} 存在")
+        else:
+            log_error(f"引用文件不存在: {ref}")
+
     if not refs_dir.exists():
-        log_warn("references/ 目录不存在，跳过")
+        log_warn("references/ 目录不存在，跳过 references 检查")
         return
 
     all_files = set(f.name for f in refs_dir.iterdir() if f.is_file())
     md_files = {f for f in all_files if f.endswith('.md')}
 
-    # Collect references from SKILL.md table
-    skill_md = SKILL_DIR / "SKILL.md"
-    if not skill_md.exists():
-        return
-    content = skill_md.read_text(encoding="utf-8")
-    refs_in_table = set(re.findall(r'`([a-zA-Z][a-zA-Z0-9_\-.]*\.md)`', content))
+    # 支持裸文件名（默认 references/ 下）与子目录路径（如 evals/eval-set.md）两种引用；
+    # 旧版正则不含 "/"，`evals/eval-set.md` 等子目录引用从不被校验
+    refs_in_table = set(re.findall(r'`((?:[a-zA-Z0-9_\-]+/)*[a-zA-Z0-9_\-]+\.md)`', content))
+    bare_refs = {r for r in refs_in_table if '/' not in r}
+    path_refs = {r for r in refs_in_table if '/' in r}
+
+    # 路径型引用（references/ 之外，如 evals/）：相对 SKILL_DIR 校验存在性
+    for ref in sorted(r for r in path_refs if not r.startswith('references/')):
+        if (SKILL_DIR / ref).exists():
+            log_ok(f"{ref} 存在")
+        else:
+            log_error(f"引用文件不存在: {ref}")
+
+    # references/ 内被引用的文件 = 裸文件名 + references/ 前缀路径
+    ref_names = bare_refs | {r.split('/', 1)[1] for r in path_refs if r.startswith('references/')}
 
     # Check each referenced .md exists
-    missing = refs_in_table - md_files
+    missing = ref_names - md_files
     for f in sorted(missing):
         log_error(f"引用文件不存在: references/{f}")
 
-    for f in sorted(refs_in_table & md_files):
+    for f in sorted(ref_names & md_files):
         log_ok(f"references/{f} 存在")
 
     # Check orphan files
-    orphans = md_files - refs_in_table
+    orphans = md_files - ref_names
     for f in sorted(orphans):
         # Skip methodology files (common pattern)
         if f.startswith('methodology-'):
@@ -240,11 +291,12 @@ def check_references():
         else:
             log_warn(f"references/{f} 在目录中但不在 SKILL.md 引用表中")
 
-    # Check referenced HTML files exist
-    html_in_table = set(re.findall(r'`([a-zA-Z][a-zA-Z0-9_\-.]*\.html)`', content))
-    missing_html = html_in_table - all_files
-    for f in sorted(missing_html):
-        log_error(f"引用 HTML 文件不存在: references/{f}")
+    # Check referenced HTML files exist（同样支持子目录路径）
+    html_in_table = set(re.findall(r'`((?:[a-zA-Z0-9_\-]+/)*[a-zA-Z0-9_\-]+\.html)`', content))
+    for f in sorted(html_in_table):
+        target = (SKILL_DIR / f) if '/' in f else (refs_dir / f)
+        if not target.exists():
+            log_error(f"引用 HTML 文件不存在: {f}")
 
     # Check frontmatter version consistency
     skill_ver_m = re.search(r'version:\s*([\d.]+)', content)
@@ -254,7 +306,10 @@ def check_references():
         print("\n📋 Reference frontmatter 版本")
         for fname in sorted(md_files):
             fpath = refs_dir / fname
-            fc = fpath.read_text(encoding="utf-8")
+            fc = _read(fpath)
+            if fc is None:
+                log_error(f"{fname} 读取失败（编码异常），跳过版本检查")
+                continue
             m = re.search(r'^version:\s*([\d.]+)', fc, re.MULTILINE)
             if m:
                 ver = m.group(1)
@@ -277,7 +332,10 @@ def check_number_sequences():
     sequences = {}  # {prefix: [numbers]}
 
     for fpath in sorted(refs_dir.glob("*.md")):
-        content = fpath.read_text(encoding="utf-8")
+        content = _read(fpath)
+        if content is None:
+            log_error(f"{fpath.name} 读取失败（编码异常），跳过编号检查")
+            continue
         # Find patterns like "## G1", "### M3", "## N5 标题"
         for m in re.finditer(r'^#{2,4}\s+([A-Z])(\d+)', content, re.MULTILINE):
             prefix = m.group(1)
@@ -308,7 +366,10 @@ def check_section_refs():
     skill_md = SKILL_DIR / "SKILL.md"
     if not skill_md.exists():
         return
-    content = skill_md.read_text(encoding="utf-8")
+    content = _read(skill_md)
+    if content is None:
+        log_error("SKILL.md 读取失败（编码异常）")
+        return
 
     # Find all → §N references
     targets_raw = re.findall(r'→\s*§(\d+)', content)

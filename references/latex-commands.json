@@ -1,0 +1,12 @@
+{
+  "_comment": "LaTeX 命令黑名单（D4 从 check-latex.py 硬编码抽出，check-latex 与 diff-case 同源引用）。微信不渲染的命令。",
+  "commands": [
+    "\\frac", "\\times", "\\div", "\\quad", "\\text", "\\left", "\\right",
+    "\\sqrt", "\\pi", "\\alpha", "\\beta", "\\theta", "\\sum", "\\prod",
+    "\\leq", "\\geq", "\\neq", "\\approx", "\\equiv", "\\pm", "\\mp",
+    "\\cdot", "\\cdots", "\\ldots", "\\infty", "\\partial", "\\nabla",
+    "\\angle", "\\triangle", "\\circ", "\\perp", "\\parallel",
+    "\\begin", "\\end", "\\matrix", "\\vec", "\\overline", "\\underline",
+    "\\hat", "\\bar", "\\dot", "\\ddot"
+  ]
+}

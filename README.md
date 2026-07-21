@@ -2,7 +2,7 @@
 
 > **不只做题，教你怎么教。** 把胡小群、昍爸、子贤老师三位数学教育实战派专家的辅导方法论，融合塞利格曼积极心理学，装进 AI Agent。
 
-[![Version](https://img.shields.io/badge/version-1.8.2-blue)](SKILL.md)
+[![Version](https://img.shields.io/badge/version-1.8.6-blue)](SKILL.md)
 [![Coverage](https://img.shields.io/badge/coverage-K12%20%E5%B0%8F%E5%88%9D%E9%AB%98%E4%B8%80%E4%BD%93%E6%88%90-green)](references/grade-quick-ref.md)
 [![License](https://img.shields.io/badge/License-Personal%20Use-orange)](#许可)
 
@@ -213,6 +213,10 @@ k12-math-tutor/
 
 | 版本 | 日期 | 变更 |
 |------|------|------|
+| 1.8.6 | 2026-07-20 | P3 修复：validate-structure 重构 argparse+统一容错（修解码拖垮/重定向崩溃）；verify-answer 全角+多根验证；check-latex 剪枝+词边界+~~~ 围栏；extract-equation 匹配表抽 JSON+情绪词上下文触发+去重；diff-case LaTeX 同源 JSON+GBK 回退+退出码契约；抽 _compat 统一编码样板；pytest 64 过 0 xfail |
+| 1.8.5 | 2026-07-20 | P2 修复：verify-answer Pow 上限+位长估算（修资源耗尽）、浮点判等改相对容差（修大数量级假阴性）；check-latex 退出码契约（接入门禁）；validate-structure .py 引用断链校验独立于 references/（修目录盲区）；diff-case 双发标注启发式；extract-equation 正名文本模式；新增 pytest 套件 48 过 13 xfail 钉住 P3 |
+| 1.8.4 | 2026-07-20 | P1 修复：validate-structure 跨文件数值检查改中文锚点+标题/正文分级，evals/ 子目录引用纳入校验（修死检查）；check-latex 白名单改命令级精确匹配（修恒真死代码）；diff-case 学段正则加语境锚点与排除（修"看一下"误报），补齐初三/高二/高三 |
+| 1.8.3 | 2026-07-20 | P0 修复：verify-answer.py 等价验证改双向真值比对（修蕴涵冒充等价）；216 测试点含近边界+固定种子模糊点（修边界盲区）；长度上限+AST 深度预检+递归捕获+main 兜底 JSON（修崩溃） |
 | 1.8.2 | 2026-07-13 | SkillHub changelog 修正发布；homepage/license 字段同步；全项目审查修复 |
 | 1.8.1 | 2026-07-13 | 全项目审查修复：check-latex.py 白名单机制、diff-case.py 正则修复、版本号同步；新增 homepage/license 字段 |
 | 1.8.0 | 2026-07-13 | 安全修复：verify-answer.py 中 3 处 eval() → AST 安全求值器 + 双层白名单；新增 K12 技能条目目录（87条结构化技能）；新增 SkillHub 市场展示字段（slug/displayName/summary/tags） |

@@ -28,7 +28,9 @@ import sys
 import json
 import re
 import ast
+import math
 import operator
+import random
 import argparse
 
 
@@ -79,10 +81,12 @@ def validate_expression(expr_str: str) -> None:
     """
     if not expr_str or not expr_str.strip():
         raise ValueError("表达式为空")
+    if len(expr_str) > 500:
+        raise ValueError(f"表达式过长（{len(expr_str)} 字符，上限 500）")
     if not _EXPR_WHITELIST_RE.match(expr_str):
         raise ValueError(
             f"表达式包含非法字符: '{expr_str}'。"
-            f"仅允许数字、a/b/x、+ - * / ** % () < > = ! 及空白"
+            f"仅允许数字、字母、运算符 + - * / ** % () < > = ! 及空白"
         )
 
 
@@ -112,7 +116,17 @@ def safe_eval_math(expr_str: str, variables: dict = None):
     try:
         tree = ast.parse(expr_str, mode='eval')
     except SyntaxError as e:
-        raise ValueError(f"表达式语法错误: '{expr_str}' -> {e}")
+        raise ValueError(f"表达式语法错误: '{expr_str[:80]}' -> {e}")
+    except RecursionError:
+        raise ValueError("表达式嵌套过深，解析失败")
+
+    # AST 深度预检（迭代实现）：拦截深层嵌套，防止求值阶段触发 RecursionError
+    stack = [(tree, 1)]
+    while stack:
+        node, depth = stack.pop()
+        if depth > 100:
+            raise ValueError("表达式嵌套深度超过 100 层，拒绝求值")
+        stack.extend((child, depth + 1) for child in ast.iter_child_nodes(node))
 
     def _eval(node):
         # 表达式根节点
@@ -146,6 +160,21 @@ def safe_eval_math(expr_str: str, variables: dict = None):
                 )
             left = _eval(node.left)
             right = _eval(node.right)
+            # Pow 资源耗尽防护（V4）：必须在调用 operator.pow 前拦截——
+            # 9**999999999 这类输入会触发超长大整数运算，直接挂起进程
+            if op_type is ast.Pow:
+                if isinstance(right, (int, float)) and abs(right) > 10000:
+                    raise ValueError(
+                        f"指数绝对值过大（{right}，上限 10000），拒绝计算"
+                    )
+                # 结果位长估算：|left|**right 的位长 ≈ right * log2(|left|)
+                if (isinstance(left, (int, float)) and isinstance(right, (int, float))
+                        and right > 0 and abs(left) > 1):
+                    est_bits = right * math.log2(abs(left))
+                    if est_bits > 1_000_000:
+                        raise ValueError(
+                            f"幂运算结果估算位长 {est_bits:.0f} bits 超上限（10^6），拒绝计算"
+                        )
             return _ALLOWED_BINOPS[op_type](left, right)
 
         # 一元运算（正负号）
@@ -195,10 +224,11 @@ def safe_eval_math(expr_str: str, variables: dict = None):
 # ═══════════════════════════════════════════════════════════
 
 def verify_inequality(stmt: str, option: str) -> dict:
-    """验证不等式选项：检查 option 是否为 stmt 的等价变形
+    """验证不等式选项：检查 option 是否为 stmt 的等价变形（双向真值比对）
 
-    策略：用 safe_eval_math 对具体数值算 stmt / option 的布尔值。
-          7 组测试点覆盖正/负/零/小数/边界。
+    策略：在每个测试点上同时求 stmt / option 真值并逐点比对。
+          任一方向不一致（stmt⟹option 或 option⟹stmt）即为反例。
+          测试点 = 固定点（常规/近边界/不成立区）+ 固定种子随机模糊点。
     """
     # 预处理：^ → **（数学幂运算符，Python 中 ^ 是异或）
     stmt = stmt.replace('^', '**')
@@ -215,45 +245,50 @@ def verify_inequality(stmt: str, option: str) -> dict:
             "counter_evidence": ""
         }
 
-    # 7 组测试点（涵盖 a>b 在正/负/零/小数等所有区间）
+    # 测试点三组：常规区间（正/负/零/小数）、近边界（a-b 微小差）、
+    # stmt 不成立区（双向等价必须覆盖 False 区）
     test_cases = [
-        (5, 3), (2, 1), (10, -1), (3.5, 0),
-        (100, 99), (-1, -5), (0.1, 0.01)
+        (5, 3), (2, 1), (10, -1), (3.5, 0), (100, 99), (-1, -5), (0.1, 0.01),
+        (1.001, 1), (0.05, 0.01), (1e-6, 0), (-0.01, -0.02),
+        (1, 2), (-3, -1), (0, 0), (-5, 10), (0.01, 0.1),
     ]
+    # 固定种子随机模糊点（可复现）：半数常规 + 半数近边界对
+    rng = random.Random(42)
+    for _ in range(100):
+        test_cases.append((round(rng.uniform(-50, 50), 6),
+                           round(rng.uniform(-50, 50), 6)))
+    for _ in range(100):
+        b_val = round(rng.uniform(-10, 10), 6)
+        test_cases.append((b_val + round(rng.uniform(-0.1, 0.1), 6), b_val))
 
-    counter_examples = []
-    valid_test_points = 0
+    mismatches = []
+    stmt_true = 0
     for a_val, b_val in test_cases:
         try:
-            stmt_holds = safe_eval_math(stmt, {'a': a_val, 'b': b_val})
-        except (ValueError, ArithmeticError, TypeError) as e:
+            s = bool(safe_eval_math(stmt, {'a': a_val, 'b': b_val}))
+            o = bool(safe_eval_math(option, {'a': a_val, 'b': b_val}))
+        except (ValueError, ArithmeticError, TypeError, RecursionError) as e:
             return {
                 "valid": False,
-                "reason": f"stmt 求值失败: {e}",
+                "reason": f"求值失败: {e}",
                 "counter_evidence": ""
             }
-        if not stmt_holds:
-            continue
-        valid_test_points += 1
-        try:
-            opt_holds = safe_eval_math(option, {'a': a_val, 'b': b_val})
-        except (ValueError, ArithmeticError, TypeError) as e:
-            return {
-                "valid": False,
-                "reason": f"option 求值失败: {e}",
-                "counter_evidence": ""
-            }
-        if not opt_holds:
-            counter_examples.append({"a": a_val, "b": b_val})
+        if s:
+            stmt_true += 1
+        if s != o:
+            mismatches.append({"a": a_val, "b": b_val, "stmt_holds": s})
 
-    if counter_examples:
+    if mismatches:
+        first = mismatches[0]
+        direction = ("原命题成立但选项不成立" if first["stmt_holds"]
+                     else "选项成立但原命题不成立")
         return {
             "valid": False,
-            "reason": f"选项 '{option}' 不是 '{stmt}' 的等价变形（找到反例）",
-            "counter_evidence": f"反例 a={counter_examples[0]['a']}, b={counter_examples[0]['b']}："
-                               f"原命题成立但选项不成立"
+            "reason": f"选项 '{option}' 与 '{stmt}' 不等价"
+                      f"（{len(test_cases)} 个测试点中 {len(mismatches)} 个真值不一致）",
+            "counter_evidence": f"反例 a={first['a']}, b={first['b']}：{direction}"
         }
-    if valid_test_points == 0:
+    if stmt_true == 0:
         return {
             "valid": False,
             "reason": f"无任何测试点满足 stmt '{stmt}'，无法验证",
@@ -261,13 +296,22 @@ def verify_inequality(stmt: str, option: str) -> dict:
         }
     return {
         "valid": True,
-        "reason": f"选项 '{option}' 在 {valid_test_points} 组测试点都与 '{stmt}' 一致",
+        "reason": f"选项 '{option}' 与 '{stmt}' 在 {len(test_cases)} 个测试点真值全部一致"
+                  f"（成立区 {stmt_true} 点 + 不成立区 {len(test_cases) - stmt_true} 点，双向等价）",
         "counter_evidence": ""
     }
 
 
 def verify_equation(equation: str, answer: str) -> dict:
-    """验证方程解：把解代回原方程检查（用 safe_eval_math）"""
+    """验证方程解：把解代回原方程检查（用 safe_eval_math）
+
+    V7：全角符号归一化 + 多根（"x=4或x=-4"）逐一验证。
+    """
+    # 全角→半角归一化（＝．＋－（）），否则"无法解析方程"的文案会误导
+    fullwidth = str.maketrans('＝．＋－（）', '=．+-()'.replace('．', '.'))
+    equation = equation.translate(fullwidth)
+    answer = answer.translate(fullwidth)
+
     try:
         lhs, rhs = equation.split('=')
     except ValueError:
@@ -277,27 +321,16 @@ def verify_equation(equation: str, answer: str) -> dict:
             "counter_evidence": ""
         }
 
-    sol_match = re.search(r'x\s*=\s*([-\d./]+)', answer)
-    if not sol_match:
+    # 收集全部根（V7）：旧版 re.search 只取第一个根，二次方程"或"连接的其余根静默漏验
+    root_strs = re.findall(r'x\s*=\s*(-?[\d.]+(?:/[\d.]+)?)', answer)
+    if not root_strs:
         return {
             "valid": False,
             "reason": f"无法从 '{answer}' 提取 x 的值",
             "counter_evidence": ""
         }
-    x_val_str = sol_match.group(1)
 
-    # 安全解析 x 值（替代 eval）
-    try:
-        validate_expression(x_val_str)
-        x_val = float(safe_eval_math(x_val_str))
-    except (ValueError, ArithmeticError, TypeError, RecursionError) as e:
-        return {
-            "valid": False,
-            "reason": f"无法解析 x 值 '{x_val_str}': {e}",
-            "counter_evidence": ""
-        }
-
-    # 预处理 + 白名单校验
+    # 预处理 + 白名单校验（对全部根代回前先做一次，避免逐根重复）
     lhs = lhs.replace('^', '**')
     rhs = rhs.replace('^', '**')
     try:
@@ -310,26 +343,39 @@ def verify_equation(equation: str, answer: str) -> dict:
             "counter_evidence": ""
         }
 
-    try:
-        lhs_val = float(safe_eval_math(lhs, {'x': x_val}))
-        rhs_val = float(safe_eval_math(rhs, {'x': x_val}))
-    except (ValueError, ArithmeticError, TypeError, RecursionError) as e:
+    # 逐根验证
+    failed = []
+    verified = []
+    for x_val_str in root_strs:
+        try:
+            validate_expression(x_val_str)
+            x_val = float(safe_eval_math(x_val_str))
+            lhs_val = float(safe_eval_math(lhs, {'x': x_val}))
+            rhs_val = float(safe_eval_math(rhs, {'x': x_val}))
+        except (ValueError, ArithmeticError, TypeError, RecursionError) as e:
+            return {
+                "valid": False,
+                "reason": f"代回求值失败（x={x_val_str}）: {e}",
+                "counter_evidence": ""
+            }
+        # 相对容差判等（V5）
+        if math.isclose(lhs_val, rhs_val, rel_tol=1e-9, abs_tol=1e-12):
+            verified.append(x_val)
+        else:
+            failed.append((x_val, lhs_val, rhs_val))
+
+    if failed:
+        x_val, lhs_val, rhs_val = failed[0]
         return {
             "valid": False,
-            "reason": f"代回求值失败: {e}",
-            "counter_evidence": ""
+            "reason": f"{len(failed)}/{len(root_strs)} 个根代回不成立",
+            "counter_evidence": f"x={x_val}：lhs={lhs_val}, rhs={rhs_val}, 差={lhs_val - rhs_val}"
         }
-
-    if abs(lhs_val - rhs_val) < 1e-9:
-        return {
-            "valid": True,
-            "reason": f"x={x_val} 代回 '{equation}' 成立",
-            "counter_evidence": ""
-        }
+    root_desc = "、".join(f"x={v}" for v in verified)
     return {
-        "valid": False,
-        "reason": f"x={x_val} 代回不成立",
-        "counter_evidence": f"lhs = {lhs_val}, rhs = {rhs_val}, 差 = {lhs_val - rhs_val}"
+        "valid": True,
+        "reason": f"{len(verified)} 个根全部代回 '{equation}' 成立（{root_desc}）",
+        "counter_evidence": ""
     }
 
 
@@ -341,17 +387,24 @@ def main():
     parser.add_argument('--answer', help='求得的解，如 "x=8"')
     args = parser.parse_args()
 
-    if args.check and args.option:
-        result = verify_inequality(args.check, args.option)
-    elif args.equation and args.answer:
-        result = verify_equation(args.equation, args.answer)
-    else:
-        print(json.dumps({
+    try:
+        if args.check and args.option:
+            result = verify_inequality(args.check, args.option)
+        elif args.equation and args.answer:
+            result = verify_equation(args.equation, args.answer)
+        else:
+            result = {
+                "valid": False,
+                "reason": "必须提供 --check/--option 或 --equation/--answer",
+                "counter_evidence": ""
+            }
+    except Exception as e:
+        # 兜底：任何未预期异常都必须遵守 JSON 输出契约（防 V3 类崩溃）
+        result = {
             "valid": False,
-            "reason": "必须提供 --check/--option 或 --equation/--answer",
+            "reason": f"工具内部错误: {type(e).__name__}: {e}",
             "counter_evidence": ""
-        }, ensure_ascii=False))
-        sys.exit(1)
+        }
 
     print(json.dumps(result, ensure_ascii=False, indent=2))
     sys.exit(0 if result['valid'] else 1)

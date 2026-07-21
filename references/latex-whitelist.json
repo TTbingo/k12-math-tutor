@@ -1,0 +1,5 @@
+{
+  "_comment": "check-latex.py 白名单配置（数据代码分离，从硬编码抽出）。whitelist_patterns=允许的反斜杠用法（markdown 语法转义，非 LaTeX），值为单反斜杠序列：\\n \\t \\r \\|；docs_whitelist=本身在讨论 LaTeX 的文档，其中命令是教学内容而非残留。",
+  "whitelist_patterns": ["\\n", "\\t", "\\r", "\\|"],
+  "docs_whitelist": ["latex-guide.md"]
+}
