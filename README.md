@@ -1,229 +1,438 @@
-# 🧮 K12 数学 AI 辅导老师
+<p align="center">
+  <br/>
+  <b><span style="font-size: 2em;">🧮 K12 Math Tutor</span></b>
+  <br/><br/>
+  不只是解题工具，是一套<b>教学哲学系统</b>。
+  <br/>
+  融合五位教育专家的方法论，编码为 18 条硬约束、39 项失败模式、5 条教学哲学线的可执行辅导引擎。
+  <br/><br/>
+</p>
 
-> **不只做题，教你怎么教。** 把胡小群、昍爸、子贤老师三位数学教育实战派专家的辅导方法论，融合塞利格曼积极心理学，装进 AI Agent。
+<div align="center">
 
-[![Version](https://img.shields.io/badge/version-1.8.6-blue)](SKILL.md)
-[![Coverage](https://img.shields.io/badge/coverage-K12%20%E5%B0%8F%E5%88%9D%E9%AB%98%E4%B8%80%E4%BD%93%E6%88%90-green)](references/grade-quick-ref.md)
-[![License](https://img.shields.io/badge/License-Personal%20Use-orange)](#许可)
+[![Version](https://img.shields.io/badge/version-1.9.0-2563eb?style=flat-square)](SKILL.md)
+[![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE)
+[![Tests](https://img.shields.io/badge/tests-64%20passing-16a34a?style=flat-square)](scripts/tests/)
+[![Coverage](https://img.shields.io/badge/coverage-K12%20小初高-f97316?style=flat-square)](references/grade-quick-ref.md)
+[![WorkBuddy](https://img.shields.io/badge/platform-WorkBuddy%20Skill-8b5cf6?style=flat-square)](https://www.codebuddy.cn)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
+
+</div>
 
 ---
 
-## 它解决什么问题
+## 这是什么
 
-孩子问"3×4 为什么等于 12？"——你不再只能说"背下来"。
+**K12 Math Tutor** 是一个 WorkBuddy AI Agent Skill，覆盖小学、初中、高中全学段数学辅导。与传统搜题工具的核心区别：
 
-这个 Skill 把胡小群、昍爸、子贤老师三位中国中小学数学教育实战派专家的辅导方法论，融合塞利格曼积极心理学，编码成可执行的辅导引擎。覆盖**小学 + 初中 + 高中**全学段，支持跨阶段知识点螺旋上升衔接辅导。它不只是"解题工具"，而是一个**教学哲学系统**：
+| 传统工具 | K12 Math Tutor |
+|---------|----------------|
+| 直接给答案 | 苏格拉底式追问，引导孩子自己推导 |
+| 只讲"怎么算" | 深挖"为什么这么算"（算理 > 算法） |
+| 机械刷题 | 吃透一道经典题，胜过刷 100 道 |
+| 死记公式 | 从具象到抽象，理解推导过程 |
+| 忽略情绪 | 情绪优先——先共情再教学 |
+| 一次成型 | 每次失败自动追加到失败模式库，越用越准 |
 
-| 不是 | 而是 |
-|------|------|
-| ❌ 直接给答案 | ✅ 苏格拉底式追问，引导孩子自己想出来 |
-| ❌ 只讲"怎么算" | ✅ 深挖"为什么这么算"（算理 > 算法） |
-| ❌ 机械刷题 | ✅ 吃透一道经典题，胜过刷 100 道 |
-| ❌ 死记公式 | ✅ 从具象到抽象，理解公式的推导过程 |
-| ❌ 忽略情绪 | ✅ 情绪优先，先共情再教学 |
-| ❌ 一次成型不进化 | ✅ 每次辅导失败自动追加经验，越用越准 |
+**适用**：家长辅导、学生自学、教师备课。**不适用**：高等数学、考研数学、奥赛冲刺、教务管理。
 
-## 装上前 vs 装上后
+---
 
-| 场景 | 没装这个 Skill 时 | 装上之后 |
-|------|------------------|---------|
-| 孩子问"鸡兔同笼" | 搜到答案 → 直接念 → 孩子记住答案但换题就不会 | AI 用假设法逐步追问，孩子自己推出答案，再出 2 道变式验证 |
-| 孩子说"我永远学不会数学" | 家长说"别这么想，你行的"→ 孩子不信 → 情绪恶化 | AI 识别永久性悲观归因 → 启动 ABCDE 重构 → 先修心态再讲题 |
-| 家长辅导到一半发火 | 双方情绪升级 → 辅导变成吵架 → 孩子更讨厌数学 | AI 预判情绪难点 → 提前给家长应对话术 → "情绪翻译机"在发火前介入 |
+## 目录
 
-## 核心特色
+- [快速开始](#快速开始)
+- [功能特性](#功能特性)
+- [五条教学哲学线](#五条教学哲学线)
+- [技术架构](#技术架构)
+- [目录结构](#目录结构)
+- [约束与质量保障](#约束与质量保障)
+- [脚本工具](#脚本工具)
+- [常见问题](#常见问题)
+- [贡献指南](#贡献指南)
+- [致谢](#致谢)
+- [许可证](#许可证)
 
-### 五条教学哲学线
-
-| 哲学线 | 来源 | 一句话 |
-|--------|------|--------|
-| **算理优先** | 胡小群（原复旦附中实验班名师） | 每个概念先讲"为什么这么算"，再讲"怎么算" |
-| **有序枚举** | 昍爸（中科院计算机博士） | 复杂题用递进式分类代替跳跃式猜测 |
-| **积极心理学** | 子贤老师 | 情绪翻译机 + 彩虹夸夸 + 错题日复习 |
-| **解释风格干预** | 塞利格曼（积极心理学之父） | 3P 诊断 + ABCDE 认知重构，避免"我永远学不会" |
-| **课标核心素养** | 课标 2022 + 高中知识萃取 | 三会用 + 十大核心素养 + 跨学段衔接 |
-
-### 双模式自动切换
-
-- 🧒 **学生模式**：独立教学引擎，三个子系统协同 ——
-  - **苏格拉底追问**：L0→L4 五轮强制递进（诊断→感知→推理→迁移→创造），每轮一个深度层级，不走完不结束
-  - **情绪扫描**：每轮追问后自动检测 3P 信号（永久性 / 普遍性 / 个人化），分 🟢🟡🔴 三层响应，必要时停讲转交家长
-  - **知识脉络**：三站式简化链（之前→现在→以后），只展示当前年级+1 的知识点，不制造焦虑
-- 👨‍👩‍👦 **家长模式**：六合一模板（题目解析 + 多解法 + 难点预判 + 引导脚本 + 知识链 + 延伸练习）+ 可直接照着念的对话脚本
-- 自动识别："孩子…""我家娃…"→ 家长模式；"我不会做…"→ 学生模式
-
-### K12 三层知识库闭环
-
-| 学段 | 知识库文件 | 覆盖范围 |
-|------|-----------|---------|
-| 小学 | `comprehensive-knowledge-base.md` | 全量知识库 |
-| 初中 | `junior-math-review-compendium.md` | 26 章中考总复习 |
-| 高中 | `hs-math-review-compendium.md` | 五册 18 章深度萃取（含课标要求） |
-
-### 错题本间隔复习五步法
-
-新增错题难题管理模块，基于子贤老师三层诊断法（🟡基础技能 / 🟢前置知识 / 🔴数学思维），构建完整复习闭环：
-
-```
-入库定周期 → 到期提醒 → 变式出题+降维 → 结果回写 → 掌握归档
-```
-
-- 三档固定周期（3/5/7 天），自动匹配错题层次
-- 换场景出题而非简单换数字，不会时先引导再降维
-- 连续两次思路清晰做对 → 自动归档"已掌握"
-- 与 P3 定期回顾机制衔接，每月统计薄弱点变化
-
-### 飞轮进化机制
-
-每次真实辅导中遇到失败模式 → 自动追加到 `gotchas.md`（G1-G38，38 条）→ 升级约束规则 → Skill 越用越准。配套三个子系统保证飞轮不腐化：
-
-- **去重归并**：标题相似度 ≥80% 的 gotcha 自动合并，内容追加到主条目不丢失
-- **健康度扫描**：按触发频率分 🟢活跃 / 🟡休眠 / 🔴淘汰，淘汰项移入 `archive/` 释放编号
-- **P3 自动触发**：每 30 天 / 每 10 条辅导记录 / 每次大版本变动 → 自动执行全量回顾
-
-不是静态文档，是活的经验库。
+---
 
 ## 快速开始
+
+### 环境要求
+
+| 依赖 | 版本 | 是否必需 |
+|------|------|---------|
+| WorkBuddy | 最新桌面 App 或 CLI | ✅ 必需 |
+| Python | 3.8+ | 仅运行 scripts 时需要 |
+| pytest | 7.0+ | 仅运行测试套件时需要 |
 
 ### 安装
 
 ```bash
+# 克隆到 WorkBuddy skills 目录
 git clone https://github.com/TTbingo/k12-math-tutor.git ~/.workbuddy/skills/k12-math-tutor
 ```
 
-### 使用
+Skill 会在 WorkBuddy 对话中**自动识别触发词并加载**，无需手动配置。
 
-在对话中直接说任何与中小学数学辅导相关的内容：
+### 第一次使用
 
+在 WorkBuddy 对话中直接提问：
+
+```text
+孩子三年级，不会做鸡兔同笼，帮我讲一下
+这道二次函数压轴题怎么做？我初二
+孩子计算总是出错，怎么训练？
+帮我出一道四年级的分数计算题
 ```
-"孩子三年级，不会做鸡兔同笼，帮我讲一下"
-"帮我出一道四年级的分数计算题"
-"孩子计算总是出错，怎么训练？"
-"中考数学压轴题，这道二次函数怎么做？"
-"高中导数的几何意义是什么？用图像解释"
-"小学的正比例和高中的线性函数有什么关系？"
-```
 
-Skill 会先确认你是**学生本人**还是**家长/老师**，然后自动切换对应模式。
+**触发关键词**（100+）：小学/初中/高中 + 数学、鸡兔同笼、奥数、算理、一题多解、几何辅助线、思维训练、情绪翻译机、ABCDE、小升初、初升高……
 
-### 触发词
+---
 
-小学/初中/高中 + 数学、鸡兔同笼、奥数、算理、数感、验算、一题多解、几何辅助线、思维训练、内驱力、情绪翻译机、解释风格、ABCDE、考试挫败、数学焦虑、跨阶段衔接、小升初、初升高……（100+ 关键词自动识别）
+## 功能特性
 
-**适用**：家长/老师辅导数学题目、询问辅导方法或情绪应对
+### 🎯 双模式自动切换
 
-**不适用**：纯公式查询、高等数学、考研数学、奥赛冲刺、教学管理/排课/教务
+| 模式 | 触发条件 | 行为 |
+|------|---------|------|
+| 🧒 **学生模式** | "我不会做…""这道题怎么做" | 苏格拉底五轮追问（L0→L4）+ 情绪扫描 + 知识脉络 |
+| 👨‍👩‍👦 **家长模式** | "孩子…""我家娃…""帮我讲一下" | 六合一模板：解析 + 多解 + 难点预判 + 引导脚本 + 知识链 + 延伸练习 |
 
-## 示例输出
+### 📚 K12 三层知识库
 
-**学生模式**（苏格拉底式追问）：
-
-> **孩子**："鸡兔同笼，14 个头，38 条腿，我不会做。"
->
-> **AI**："我们先不急着做题。你想象一下：如果笼子里全是鸡，那 14 只鸡有多少条腿？"
->
-> **孩子**："28 条。"
->
-> **AI**："对！但题目说有 38 条腿，差了多少条？"
->
-> **孩子**："差了 10 条。"
->
-> **AI**："很好。那每把一只鸡换成一只兔子，腿会多几条？"
->
-> **孩子**："……多 2 条！"
->
-> **AI**："所以要补上 10 条腿，需要换几只？"
->
-> **孩子**："5 只！所以兔子 5 只，鸡 9 只！"
-
-**家长模式**：完整解析 + 算理解析 + 常见错误 + 引导脚本（可直接照着念）+ 知识脉络 + 延伸练习，支持生成 HTML 附件交付。
-
-## 安全边界
-
-| ❌ 不会做 | 原因 |
-|-----------|------|
-| 直接给答案 | 核心原则：用启发代替灌输 |
-| 批评孩子 | 错了 = 发现了学习机会 |
-| 超前压榨 | 四年级前不强行用抽象方式教公式 |
-| 堆砌口诀 | 口诀学得越多，理解越少 |
-| 替代老师/家长 | 定位是辅导工具，不改作业、不替代教学关系 |
-| 空泛安慰 | 不说"你很聪明"，说具体行为和方法 |
-
-## 方法论来源
-
-| 来源 | 核心贡献 | 适用场景 |
+| 学段 | 知识文件 | 覆盖范围 |
 |------|---------|---------|
-| **胡小群**（原复旦附中实验班名师） | 算理优先、三层次理解法、小初高一体化 | 算理讲解、跨阶段衔接 |
-| **昍爸**（中科院计算机博士） | 解题八步法、六大思维方法、验算四层次 | 复杂题分析、思维训练 |
-| **子贤老师** | 情绪翻译机、彩虹夸夸、三层诊断法 | 情绪管理、错题复习 |
-| **马丁·塞利格曼**（积极心理学之父） | 解释风格 3P 诊断、ABCDE 认知重构 | 悲观归因修复、心态建设 |
-| **义务教育课标 2022 版** | 核心素养体系、学段目标、学业质量标准 | 学段对标、难度校准 |
-| **高中知识萃取** | 五册 18 章深度萃取，含概念群+思想方法+高考转化+易错警示 | 高中辅导 |
+| 小学 | `comprehensive-knowledge-base.md` | 全量知识点 + 算理对照 |
+| 初中 | `junior-math-review-compendium.md` | 26 章中考总复习 |
+| 高中 | `hs-math-review-compendium.md` | 五册 18 章深度萃取 |
 
-> 完整方法论见 `references/methodology-*.md`，每份头部有「快速调用矩阵」按场景秒查。
+### 🔄 飞轮进化机制
 
-## 文件结构
+每次辅导失败 → 自动追加到 `gotchas.md`（G1-G39，38 条有效）→ 升级约束规则 → Skill 越用越准。P3 定期回顾（每 30 天 / 每 10 条记录 / 每次大版本变动）自动归并去重。
+
+### 📝 错题本系统
+
+基于子贤老师三层诊断法（🟡基础技能 / 🟢前置知识 / 🔴数学思维），构建完整复习闭环：入库定周期 → 到期提醒 → 变式出题 + 降维 → 结果回写 → 掌握归档。支持 Markdown + HTML 双格式输出。
+
+### 🧪 质量保障
+
+- **18 条硬约束**：if-then 规则，覆盖算理、追问、情绪、双输出、原题呈现等
+- **11 项自检清单**：输出前逐项打勾，4 项强制阻塞
+- **pytest 回归套件**：64 用例全绿，覆盖 5 个核心脚本
+- **eval 活体测试**：20 题 × 4 维评分，月度量化
+
+---
+
+## 五条教学哲学线
+
+| 哲学线 | 来源 | 核心原则 |
+|--------|------|---------|
+| **算理优先** | 胡小群（复旦附中名师） | 每个概念先讲"为什么这么算"，再讲"怎么算" |
+| **有序枚举** | 昍爸（中科院博士） | 复杂题用递进式分类代替跳跃式猜测 |
+| **积极心理学** | 子贤老师 | 情绪翻译机 + 彩虹夸夸 + 错题日复习 |
+| **解释风格干预** | 塞利格曼 | 3P 诊断 + ABCDE 认知重构，修复悲观归因 |
+| **课标核心素养** | 课标 2022 | 三会用 + 十大核心素养 + 跨学段衔接 |
+
+当多条方法论线冲突时，裁决优先级：**情绪崩溃 > ABCDE > 算理优先**（详见 §G19）。
+
+---
+
+## 技术架构
+
+```
+┌─────────────────────────────────────────────────┐
+│                   WorkBuddy Agent                │
+│  (Read / Write / WebSearch / WebFetch tools)    │
+└─────────────────────┬───────────────────────────┘
+                      │ 加载 Skill
+┌─────────────────────▼───────────────────────────┐
+│              SKILL.md (主入口)                    │
+│  ┌──────────┐ ┌──────────┐ ┌─────────────────┐ │
+│  │ 身份识别  │ │ 方法论路由 │ │ 18 条硬约束引擎  │ │
+│  │ 双模式切换│ │ 5 线决策  │ │ if-then 执行器   │ │
+│  └──────────┘ └──────────┘ └─────────────────┘ │
+│  ┌──────────────────────────────────────────┐   │
+│  │           自检清单 (11 项 × 4 阻塞)        │   │
+│  └──────────────────────────────────────────┘   │
+└─────────────────────┬───────────────────────────┘
+                      │
+    ┌─────────────────┼─────────────────┐
+    ▼                 ▼                  ▼
+┌────────┐    ┌──────────────┐    ┌────────────┐
+│references│   │   scripts/   │    │   evals/   │
+│ 知识库   │   │  验证工具链   │    │  活体测试   │
+│ 方法论   │   │  pytest 套件  │    │  4 维评分   │
+│ 案例库   │   │  _compat 层   │    │  月度评估   │
+│ gotchas │   │  5 个脚本     │    │            │
+└────────┘    └──────────────┘    └────────────┘
+```
+
+### 核心组件
+
+| 组件 | 位置 | 职责 |
+|------|------|------|
+| **主入口** | `SKILL.md` | Skill 加载钩子、约束引擎、SOP 工作流、自检清单 |
+| **知识库** | `references/`（34 个文件） | 方法论文档、K12 知识体系、案例库、错题模板 |
+| **验证工具链** | `scripts/`（6 个文件） | LaTeX 检查、答案验证、偏离检测、结构校验 |
+| **共享兼容层** | `scripts/_compat.py` | Windows GBK 终端 UTF-8 适配 |
+| **测试套件** | `scripts/tests/`（6 个文件） | pytest 64 用例回归 + 集成冒烟 |
+| **活体测试** | `evals/eval-set.md` | 20 题 × 4 维评分，月度量化 |
+| **测试用例** | `test-prompts.json` | 结构化测试 prompt 集 |
+
+---
+
+## 目录结构
 
 ```
 k12-math-tutor/
-├── SKILL.md                               # 主入口（加载钩子 + 约束速查 + references 索引）
-├── README.md                              # 本文件
-├── test-prompts.json                      # 测试用例集
+│
+├── SKILL.md                                   # 主入口：加载钩子 + 约束引擎 + SOP + 自检清单
+├── README.md                                  # 本文件
+├── test-prompts.json                          # 结构化测试用例集
+├── .gitignore                                 # Git 忽略规则
+│
 ├── evals/
-│   └── eval-set.md                        # 活体测试（4 维打分）
-├── scripts/
-│   ├── check-latex.py                     # LaTeX 残留扫描（防 G10 复发）
-│   ├── extract-equation.py                # 关键词→考点→方法论匹配
-│   ├── diff-case.py                       # 方法论偏离对比
-│   ├── verify-answer.py                   # 答案可逆验证（AST 安全求值器）
-│   └── validate-structure.py              # 通用 Skill 结构完整性校验
-└── references/                            # 29 个参考资产
-    ├── constraints-quick-ref.md           # 17 条硬约束卡片
-    ├── grade-quick-ref.md                 # 1-12 年级知识点 + K12 思想方法阶梯脉络
-    ├── grade-curriculum-map.md            # 1-6 年级知识点与算理对照
-    ├── curriculum-standard-2022.md        # 义务教育数学课标 2022 版
-    ├── comprehensive-knowledge-base.md     # 小学数学全量知识库
-    ├── junior-math-review-compendium.md   # 初中 26 章中考总复习
-    ├── hs-math-review-compendium.md       # 高中五册深度萃取（18 章，含课标覆盖）
-    ├── exam-bank.md                       # 全学段试卷索引
-    ├── mistake-bank.md                    # 错题本管理（三层诊断+间隔复习五步法+双格式输出）
-    ├── methodology-hu-xiaoqun.md          # 胡小群方法论
-    ├── methodology-xuanba.md              # 昍爸方法论
-    ├── methodology-xuanba-advanced.md    # 昍爸进阶方法论
-    ├── methodology-zixian.md              # 子贤老师方法论
-    ├── seligman-positive-parenting.md     # 塞利格曼积极教养
-    ├── core-formula-teaching-scripts.md   # 核心公式教学话术
-    ├── xuanba-problem-bank.md             # 经典例题库
-    ├── life-scene-math.md                 # 生活场景与数学对照
-    ├── olympiad-cases.md                  # 奥数经典题库
-    ├── gotchas.md                         # 失败模式库 G1-G38（38条） + A1-A5
-    ├── case-studies.md                    # 精选案例
-    ├── anti-patterns.md                   # 已退休反例
-    ├── latex-guide.md                     # 数学符号书写与排版规范
-    ├── question-design.md                 # 出题规范
-    ├── socratic-depth-algorithm.md        # 追问深度算法
-    ├── skill-health.md                    # 月度评估模板
-    ├── p3-review-mechanism.md             # 定期回顾机制
-    ├── diagnosis-card-template.html       # 诊断卡 HTML 模板
-    ├── k12-skill-taxonomy.md              # K12 技能条目目录（87条，4域+2跨域×3学段）
-    └── tutor-log.md                       # 辅导记录模板
+│   └── eval-set.md                            # 20 题活体测试集（月度跑）
+│
+├── scripts/                                   # 验证工具链（Python 3.8+）
+│   ├── _compat.py                             # 共享兼容层：Windows 终端 UTF-8 适配
+│   ├── check-latex.py                         # LaTeX 残留扫描
+│   ├── verify-answer.py                       # 答案可逆验证（AST 安全求值器）
+│   ├── diff-case.py                           # 方法论偏离对比
+│   ├── extract-equation.py                    # 算理考点识别
+│   ├── validate-structure.py                  # Skill 结构完整性校验
+│   └── tests/                                 # pytest 回归套件（64 用例）
+│       ├── conftest.py
+│       ├── test_smoke.py
+│       ├── test_check_latex.py
+│       ├── test_verify_answer.py
+│       ├── test_diff_case.py
+│       ├── test_extract_equation.py
+│       └── test_validate_structure.py
+│
+└── references/                                # 知识资产（34 个文件）
+    │
+    ├── 核心知识体系/
+    │   ├── comprehensive-knowledge-base.md
+    │   ├── junior-math-review-compendium.md
+    │   ├── hs-math-review-compendium.md
+    │   ├── grade-curriculum-map.md
+    │   ├── grade-quick-ref.md
+    │   ├── curriculum-standard-2022.md
+    │   ├── k12-skill-taxonomy.md
+    │   └── exam-bank.md
+    │
+    ├── 方法论（5 套）/
+    │   ├── methodology-hu-xiaoqun.md
+    │   ├── methodology-xuanba.md
+    │   ├── methodology-xuanba-advanced.md
+    │   ├── methodology-zixian.md
+    │   ├── seligman-positive-parenting.md
+    │   ├── core-formula-teaching-scripts.md
+    │   ├── xuanba-problem-bank.md
+    │   └── life-scene-math.md
+    │
+    ├── 约束与规范/
+    │   ├── constraints-quick-ref.md
+    │   ├── socratic-depth-algorithm.md
+    │   ├── question-design.md
+    │   ├── latex-guide.md
+    │   ├── latex-commands.json
+    │   └── latex-whitelist.json
+    │
+    ├── 案例与进化/
+    │   ├── gotchas.md
+    │   ├── case-studies.md
+    │   ├── anti-patterns.md
+    │   ├── olympiad-cases.md
+    │   ├── tutor-log.md
+    │   ├── skill-health.md
+    │   └── p3-review-mechanism.md
+    │
+    ├── 错题与诊断/
+    │   ├── mistake-bank.md
+    │   └── diagnosis-card-template.html
+    │
+    └── 数据配置/
+        ├── arithmetic-patterns.json
+        └── diff-case-keywords.json
 ```
+
+---
+
+## 约束与质量保障
+
+### 18 条硬约束
+
+每次输出前必须通过 11 项自检清单，其中 4 项强制阻塞：
+
+| 阻塞项 | 检查内容 | 后果 |
+|--------|---------|------|
+| 🚪 物理门 0 | 学员信息已确认 | 禁止输出完整解析 |
+| ⑧ | 答案可逆验证通过 | 禁止发出错误答案 |
+| ⑨ | 双发附件已真发 | 禁止只输出文字 |
+| ⑪ | HTML 原题完整呈现 | 禁止发出缺原题的 HTML |
+
+完整约束卡片见 [`references/constraints-quick-ref.md`](references/constraints-quick-ref.md)。
+
+### 失败模式库
+
+已积累 **G1-G39**（38 条有效，2 条已淘汰），按触发信号自动追加。详见 [`references/gotchas.md`](references/gotchas.md)。
+
+---
+
+## 脚本工具
+
+5 个独立 Python 工具，均支持 `--help` 查看参数，退出码 0=通过。Windows 下通过 `_compat.py` 自动处理终端编码。
+
+```bash
+cd ~/.workbuddy/skills/k12-math-tutor
+
+# LaTeX 残留扫描
+python scripts/check-latex.py --dir .
+
+# 答案可逆验证
+python scripts/verify-answer.py --answer "x=6, y=72" --expected "x=6, y=72"
+
+# 方法论偏离检测
+python scripts/diff-case.py output_v1.md output_v2.md
+
+# Skill 结构完整性校验
+python scripts/validate-structure.py --skill-dir .
+
+# 算理考点识别
+python scripts/extract-equation.py --text "某超市购进大米，成本4元/kg..."
+```
+
+### 运行测试
+
+```bash
+pip install pytest
+pytest scripts/tests -q
+# 预期：64 passed, 0 xfailed
+```
+
+---
+
+## 常见问题
+
+<details>
+<summary><b>这个 Skill 和搜题 App 有什么区别？</b></summary>
+<p>
+搜题 App 直接给答案，孩子抄完就忘。K12 Math Tutor 用苏格拉底追问引导孩子自己想出来——从"你看到了什么条件"开始，一步步推导，让答案变成孩子自己的结论。家长模式还会教你怎么跟孩子对话、怎么夸。
+</p>
+</details>
+
+<details>
+<summary><b>需要装什么依赖？</b></summary>
+<p>
+<strong>零必需依赖</strong>。Skill 本身运行在 WorkBuddy 框架内，不需要额外安装。scripts 目录的验证工具是可选的（需要 Python 3.8+ + pytest 7.0+），仅开发/维护时使用。
+</p>
+</details>
+
+<details>
+<summary><b>支持哪些年级？</b></summary>
+<p>
+小学 1-6 年级、初中 7-9 年级、高中 10-12 年级，全学段覆盖。自动根据题目难度和提问方式推断年级。不适用高等数学、考研数学、奥赛冲刺。
+</p>
+</details>
+
+<details>
+<summary><b>怎么区分学生模式和家长模式？</b></summary>
+<p>
+自动识别。措辞用"我""这道题"→学生模式；"孩子""我家娃"→家长模式。家长模式会输出辅导脚本、夸夸话术、情绪应对策略，教你怎么教。
+</p>
+</details>
+
+<details>
+<summary><b>答案准确吗？</b></summary>
+<p>
+内置答案可逆验证（将答案代回原题验证），加 64 个 pytest 回归用例。但如果发现错误，请提交 issue 触发飞轮修复——这是 Skill 越用越准的设计机制。
+</p>
+</details>
+
+<details>
+<summary><b>OCR 识别数学公式怎么办？</b></summary>
+<p>
+WorkBuddy 内置多模态能力可以直接读图。如果公式复杂，可选安装 <code>rapid-ocr</code>、<code>pix2text-ocr</code> 或 <code>mineru</code> 作为增强（在 WorkBuddy 中用 find-skills 一键安装）。
+</p>
+</details>
+
+<details>
+<summary><b>怎么更新到最新版本？</b></summary>
+
+```bash
+cd ~/.workbuddy/skills/k12-math-tutor
+git pull origin master
+```
+
+新版本会在下次会话自动生效。
+</details>
+
+---
+
+## 贡献指南
+
+欢迎贡献！以下是快速入口：
+
+| 想做什么 | 怎么做 |
+|---------|--------|
+| 🐛 报告问题 | [提交 Issue](https://github.com/TTbingo/k12-math-tutor/issues)，附上版本号 + 输入/输出对比 |
+| 💡 提建议 | [发起 Discussion](https://github.com/TTbingo/k12-math-tutor/discussions) |
+| 🔧 提交代码 | Fork → 创建分支 → 跑测试 → 提交 PR |
+
+### PR 提交前必做
+
+```bash
+# 结构完整性
+python scripts/validate-structure.py --skill-dir .
+
+# 全量测试
+pytest scripts/tests -q
+```
+
+确保 64 用例全绿后再提交。
+
+### 约束新增规范
+
+- 新约束 → 必须同步更新 `constraints-quick-ref.md` + `gotchas.md`（追加不覆盖）
+- 修改 `SKILL.md` → 版本号递增 → 更新 README 变更日志
+- **先改文档，再改实践**
+
+### 版本号语义
+
+`MAJOR.MINOR.PATCH`：P0 修补 PATCH，P1/P2 修补 MINOR，架构变更补 MAJOR。
+
+---
+
+## 致谢
+
+| 来源 | 核心贡献 |
+|------|---------|
+| **胡小群**（复旦附中名师） | 算理优先、三层次理解法、小初高一体化 |
+| **昍爸**（中科院博士） | 解题八步法、六大思维方法、验算四层次 |
+| **子贤老师** | 情绪翻译机、彩虹夸夸、三层诊断法 |
+| **马丁·塞利格曼**（积极心理学之父） | 解释风格 3P 诊断、ABCDE 认知重构 |
+| **义务教育课标 2022 版** | 核心素养体系、学段目标、学业质量标准 |
+
+---
 
 ## 变更日志
 
 | 版本 | 日期 | 变更 |
 |------|------|------|
-| 1.8.6 | 2026-07-20 | P3 修复：validate-structure 重构 argparse+统一容错（修解码拖垮/重定向崩溃）；verify-answer 全角+多根验证；check-latex 剪枝+词边界+~~~ 围栏；extract-equation 匹配表抽 JSON+情绪词上下文触发+去重；diff-case LaTeX 同源 JSON+GBK 回退+退出码契约；抽 _compat 统一编码样板；pytest 64 过 0 xfail |
-| 1.8.5 | 2026-07-20 | P2 修复：verify-answer Pow 上限+位长估算（修资源耗尽）、浮点判等改相对容差（修大数量级假阴性）；check-latex 退出码契约（接入门禁）；validate-structure .py 引用断链校验独立于 references/（修目录盲区）；diff-case 双发标注启发式；extract-equation 正名文本模式；新增 pytest 套件 48 过 13 xfail 钉住 P3 |
-| 1.8.4 | 2026-07-20 | P1 修复：validate-structure 跨文件数值检查改中文锚点+标题/正文分级，evals/ 子目录引用纳入校验（修死检查）；check-latex 白名单改命令级精确匹配（修恒真死代码）；diff-case 学段正则加语境锚点与排除（修"看一下"误报），补齐初三/高二/高三 |
-| 1.8.3 | 2026-07-20 | P0 修复：verify-answer.py 等价验证改双向真值比对（修蕴涵冒充等价）；216 测试点含近边界+固定种子模糊点（修边界盲区）；长度上限+AST 深度预检+递归捕获+main 兜底 JSON（修崩溃） |
-| 1.8.2 | 2026-07-13 | SkillHub changelog 修正发布；homepage/license 字段同步；全项目审查修复 |
-| 1.8.1 | 2026-07-13 | 全项目审查修复：check-latex.py 白名单机制、diff-case.py 正则修复、版本号同步；新增 homepage/license 字段 |
-| 1.8.0 | 2026-07-13 | 安全修复：verify-answer.py 中 3 处 eval() → AST 安全求值器 + 双层白名单；新增 K12 技能条目目录（87条结构化技能）；新增 SkillHub 市场展示字段（slug/displayName/summary/tags） |
-| 1.7.0 | 2026-07-06 | 可视化图表交付工作流；SVG→HTML 三件套约束；自检清单第⑩项 |
-| 1.6.0 | 2026-06-29 | 约束系统升级（17条→G38）；诊断卡模板；错题本间隔复习五步法 |
-| 1.5.0 | 2026-06-24 | 小初高一体化知识库闭环；P3 定期回顾机制；飞轮进化机制 |
+| **1.9.0** | 2026-07-21 | P2 新增：约束 18（HTML 原题完整呈现）+ G39 gotcha；自检清单同步新增 ⑪ |
+| 1.8.6 | 2026-07-20 | P3 修复：5 脚本重构 + pytest 64 用例 |
+| 1.8.5 | 2026-07-20 | P2 修复：verify Pow 上限 / 浮点容差 / check-latex 退出码 |
+| 1.8.4 | 2026-07-20 | P1 修复：validate 中文锚点 / check-latex 精确匹配 |
+| 1.8.3 | 2026-07-20 | P0 修复：verify 双向真值比对 / 216 测试点 |
+| 1.8.2 | 2026-07-13 | SkillHub changelog 修正 + 全项目审查 |
+| 1.8.0 | 2026-07-13 | 安全修复：eval() → AST 安全求值器 |
+| 1.7.0 | 2026-07-06 | 可视化图表交付工作流 + SVG→HTML 三件套 |
 
-## 许可
+---
 
-基于胡小群老师、昍爸、子贤老师和塞利格曼的公开方法论整理，仅供个人学习与辅导使用。
+## 许可证
+
+MIT License © 2026 TTbingo
+
+基于五位教育专家的公开方法论整理，仅供个人学习与辅导使用。引用请注明原作者。
