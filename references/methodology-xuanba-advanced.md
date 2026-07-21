@@ -1,3 +1,10 @@
+---
+title: "methodology xuanba advanced"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # 昍爸方法论深化（必读精选文39篇分析）
 
 > 来源：昍爸说数学与计算思维（公众号）必读精选文专辑，39篇文章深度分析

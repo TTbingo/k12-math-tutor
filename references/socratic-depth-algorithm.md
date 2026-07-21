@@ -1,3 +1,10 @@
+---
+title: "socratic depth algorithm"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # 苏格拉底式追问深度算法
 
 ## 深度层级定义

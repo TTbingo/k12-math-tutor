@@ -1,3 +1,10 @@
+---
+title: "junior math review compendium"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # 初中数学中考总复习知识体系（7-9年级）
 
 > 来源：《中考数学总复习资料完整版》（26章） + 《初中数学知识点总结大全》

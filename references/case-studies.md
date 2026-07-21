@@ -1,6 +1,6 @@
 ---
 title: "K12 经典启发案例库（精选 5 例）"
-version: 1.8.6
+version: 1.9.0
 last_updated: 2026-06-24
 total_cases: 5  # 由 14 例砍到 5 例
 retired_cases: 9  # 已迁移到 references/anti-patterns.md
@@ -197,6 +197,6 @@ retired_cases: 9  # 已迁移到 references/anti-patterns.md
 ## 🔗 关联文件
 
 - `references/anti-patterns.md` —— 9 个已退休案例 + 反例示范(搭配 G1-G24 gotchas)
-- `references/constraints-quick-ref.md` —— 17 条硬约束速查卡
-- `references/gotchas.md` —— 29 个失败模式库
+- `references/constraints-quick-ref.md` —— 18 条硬约束速查卡
+- `references/gotchas.md` —— 41 个失败模式库
 - `references/methodology-*.md` —— 4 套方法论完整版（含快速调用矩阵）

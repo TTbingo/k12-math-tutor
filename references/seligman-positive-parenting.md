@@ -1,3 +1,10 @@
+---
+title: "seligman positive parenting"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # 塞利格曼积极教养方法论 — 数学辅导底层融合
 
 > 来源：马丁·塞利格曼《教出乐观的孩子》(1995) + 《真实的幸福》(2002)，经 book2skill RIA-TV++ 五阶段流水线蒸馏

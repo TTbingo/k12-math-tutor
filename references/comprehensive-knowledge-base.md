@@ -1,3 +1,10 @@
+---
+title: "comprehensive knowledge base"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # 小学数学1-6年级全面知识库
 > 来源：《小学数学总复习·知识点大合集》（64页完整版）
 > 整合日期：2026-04-21

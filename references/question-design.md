@@ -1,3 +1,10 @@
+---
+title: "question design"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # 出题规范
 
 当用户要求"出题"时，按以下规范执行。

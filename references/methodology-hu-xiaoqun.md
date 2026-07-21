@@ -1,3 +1,10 @@
+---
+title: "methodology hu xiaoqun"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # 胡小群老师数学方法论完整整理
 
 > 来源：胡小群老师（复旦大学数学系毕业，原复旦附中实验班名师）

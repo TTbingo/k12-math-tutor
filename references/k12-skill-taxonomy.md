@@ -1,3 +1,10 @@
+---
+title: "k12 skill taxonomy"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # K12 数学技能条目目录（Skill Taxonomy）
 
 > **定位**：k12-math-tutor 的正式能力清单，每条技能含四字段（名称/描述/年级/标签），供 SkillHub 平台编目、能力检索、辅导匹配使用。

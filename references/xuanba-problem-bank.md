@@ -1,3 +1,10 @@
+---
+title: "xuanba problem bank"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # 昍爸经典例题库
 
 > 来源：昍爸公众号「昍爸说数学与计算思维」91篇文章 + 必读精选文39篇

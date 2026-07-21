@@ -1,3 +1,10 @@
+---
+title: "core formula teaching scripts"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # 12 大核心公式教学话术
 
 > 来源：昍爸「小学数学最重要的12个公式」三重境界方法论

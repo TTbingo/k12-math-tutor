@@ -1,3 +1,10 @@
+---
+title: "grade quick ref"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # 年级对应知识点速查
 
 > 📚 **完整知识库**：`references/comprehensive-knowledge-base.md`（小学1-6年级）

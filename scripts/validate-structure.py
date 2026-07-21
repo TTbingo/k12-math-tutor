@@ -285,7 +285,9 @@ def check_references():
     # Check orphan files
     orphans = md_files - ref_names
     for f in sorted(orphans):
-        # Skip methodology files (common pattern)
+        # Skip template / methodology files (not meant to be in 引用表)
+        if f.startswith('_'):
+            continue
         if f.startswith('methodology-'):
             log_ok(f"references/{f} (方法论文件，按模式引用)")
         else:
@@ -303,12 +305,18 @@ def check_references():
     expected_ver = skill_ver_m.group(1) if skill_ver_m else None
 
     if expected_ver and md_files:
-        print("\n📋 Reference frontmatter 版本")
+        print("\n📋 Reference frontmatter 完整性")
         for fname in sorted(md_files):
             fpath = refs_dir / fname
             fc = _read(fpath)
             if fc is None:
-                log_error(f"{fname} 读取失败（编码异常），跳过版本检查")
+                log_error(f"{fname} 读取失败（编码异常），跳过 frontmatter 检查")
+                continue
+            # 8) frontmatter 存在性（须基于 _TEMPLATE.md）
+            #    缺 frontmatter 降为警告而非错误：外部/最小化 fixture 未必带 frontmatter，
+            #    硬报错会拖垮整轮校验；版本不一致仍按下方硬错误保留。
+            if not fc.lstrip().startswith('---'):
+                log_warn(f"{fname} 缺少 frontmatter（建议基于 _TEMPLATE.md）")
                 continue
             m = re.search(r'^version:\s*([\d.]+)', fc, re.MULTILINE)
             if m:

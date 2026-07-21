@@ -1,3 +1,10 @@
+---
+title: "methodology xuanba"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # 昍爸方法论与六大思维体系
 
 > 来源：昍爸（中科院计算机博士、大学教授）

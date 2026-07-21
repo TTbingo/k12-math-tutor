@@ -45,18 +45,28 @@ _FIRST_PERSON = ('我', '孩子', '娃')
 _SUBJECT_CHARS = '小明华李张王赵同学他她你'
 
 
-def _emotion_triggered(keyword, text):
-    """情绪词仅当疑似真实情绪表达时才命中。"""
+def _emotion_triggered(keyword, text, exceptions=None):
+    """情绪词仅当疑似真实情绪表达时才命中。
+
+    E2 增强：第三人称主语（小明/他/同学…）紧邻情绪词 → 题干叙述，不触发；
+    JSON 声明的 context_exceptions 上下文短语命中亦不触发。
+    """
+    exceptions = exceptions or []
     for m in re.finditer(re.escape(keyword), text):
         start = m.start()
-        # 句首或紧邻标点（独立短句开头）
+        # 句首或紧邻标点（独立短句开头）→ 触发
         if start == 0 or text[start - 1] in '，。！？；、\n':
             return True
-        # 前文 6 字内含第一人称主语
         ctx = text[max(0, start - 6):start]
+        # 前文 6 字内含第一人称主语（我/孩子/娃）→ 触发
         if any(p in ctx for p in _FIRST_PERSON):
             return True
-        # 前文紧邻第三人称题目主语（小明/小华等）→ 题干叙述，不触发
+        # 前文紧邻第三人称题目主语（小明/小华/他/同学…）→ 题干叙述，不触发
+        if any(s in ctx for s in _SUBJECT_CHARS):
+            return False
+        # JSON 声明的显式例外上下文（如"他不会""同学说不会"）→ 不触发
+        if any(ex in ctx for ex in exceptions):
+            return False
     return False
 
 
@@ -70,7 +80,7 @@ def analyze_text(text):
     for keyword, info in ARITHMETIC_PATTERNS.items():
         if keyword not in text:
             continue
-        if info.get("情绪") and not _emotion_triggered(keyword, text):
+        if info.get("情绪") and not _emotion_triggered(keyword, text, info.get("context_exceptions")):
             continue
         hits.append({
             '关键词': keyword,
@@ -96,7 +106,7 @@ def analyze_text(text):
 
 def main():
     parser = argparse.ArgumentParser(description='K12 算理考点匹配（文本模式；图片 OCR 未实现）')
-    parser.add_argument('image', nargs='?', help='试卷图片路径')
+    parser.add_argument('--image', help='试卷图片路径（OCR 未实现，仅提示）')
     parser.add_argument('--text', help='直接传入 OCR 识别后的文本')
     args = parser.parse_args()
 
@@ -118,14 +128,13 @@ def main():
     if not args.image:
         print('\n用法:')
         print('  python extract-equation.py --text "题目文本"  # 文本模式（可用）')
-        print('  python extract-equation.py <图片路径>       # 图片模式（未实现，仅提示）')
+        print('  python extract-equation.py --image <图片路径>  # 图片模式（未实现，仅提示）')
         print('\n算理考点匹配表（共 {} 条）:'.format(len(ARITHMETIC_PATTERNS)))
         for k, v in ARITHMETIC_PATTERNS.items():
             print(f'  {k:8s} → {v["考点"]:20s} | {v["方法论"]:20s} | {v["年级"]}')
         return
 
-    # 图片模式：OCR 链路未实现（E1 正名）——旧版只打印预处理建议后结束，
-    # 无任何提取却宣称"提取"，名不符实。显式声明未实现并引导 --text。
+    # 图片 OCR 模式未实现——设计理由见模块 docstring（E1 正名），此处仅显式声明并引导 --text。
     image_path = os.path.abspath(args.image)
     if not os.path.exists(image_path):
         print(f'[ERROR] 文件不存在: {image_path}')

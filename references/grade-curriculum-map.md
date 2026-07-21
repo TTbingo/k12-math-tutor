@@ -1,3 +1,10 @@
+---
+title: "grade curriculum map"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # 小学1-6年级知识点与算理对照表
 
 > 基于人教版课标 + 胡小群/昍爸方法论的算理要点补充

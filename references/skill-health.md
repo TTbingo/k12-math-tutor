@@ -1,3 +1,10 @@
+---
+title: "skill health"
+version: 1.9.0
+last_updated: 2026-07-21
+usage: "按需查阅，不自动展开"
+---
+
 # Skill Health — 月度评估记录
 
 > **用途**：记录每次跑 `evals/eval-set.md` 的分数，量化 Skill 效果。

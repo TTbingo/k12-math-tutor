@@ -33,12 +33,12 @@ def test_text_area():
 def test_image_mode_not_implemented(tmp_path):
     img = tmp_path / "p.png"
     img.write_bytes(b"\x89PNG\r\n\x1a\n")
-    r = run(str(img))
+    r = run("--image", str(img))
     assert "NOT IMPLEMENTED" in r.stdout
     assert r.returncode == 1
 
 def test_image_missing_exit_1():
-    r = run("C:/nonexistent/definitely/pic.png")
+    r = run("--image", "C:/nonexistent/definitely/pic.png")
     assert r.returncode == 1
 
 
@@ -63,5 +63,5 @@ def test_e2_circle_area_dedup():
 def test_e4_text_and_image_mutex(tmp_path):
     img = tmp_path / "p.png"
     img.write_bytes(b"\x89PNG\r\n\x1a\n")
-    r = run(str(img), "--text", "题目")
+    r = run("--image", str(img), "--text", "题目")
     assert "互斥" in r.stdout or "WARN" in r.stdout

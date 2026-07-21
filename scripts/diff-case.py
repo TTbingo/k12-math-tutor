@@ -42,6 +42,38 @@ def _load_latex_pattern():
 
 _LATEX_RE = _load_latex_pattern()
 
+# 学段裸缩写前导边界白名单：start 或这些字符之后的 X上/X下 才可能是真学段
+_GRADE_BOUNDARY = ' \t\n\r\f\v，。、；：！？（）()'
+
+def _find_grades(text):
+    """启发式学段识别（三级模式）。返回去重后的学段标记列表。
+
+    旧版用变长 lookbehind (?<=^|[\\s，。、；：！？\\n（）()]) 实现前导边界，
+    但 Python re 要求 lookbehind 定宽（^ 与字符类宽度不一）→ re.PatternError 崩溃。
+    故前导边界与成语排除改在 Python 内逐匹配判定。
+    """
+    grades = set()
+
+    # 1) 明确锚点：X年级上下(册|学期)?
+    for m in re.finditer(r'[一二三四五六]年级[上下](?:册|学期)?', text):
+        grades.add(m.group(0))
+
+    # 2) 裸缩写 X上/X下：需前导边界，且排除成语语境（四下张望 / 三下五除二）
+    for m in re.finditer(r'[一二三四五六][上下]', text):
+        start = m.start()
+        if start > 0 and text[start - 1] not in _GRADE_BOUNDARY:
+            continue  # 前导非边界（"统一上""低三下"）→ 跳过
+        after = text[m.end():m.end() + 3]
+        if after.startswith('张望') or after.startswith('五除二'):
+            continue  # 成语语境（"四下张望""三下五除二"）→ 跳过
+        grades.add(m.group(0))
+
+    # 3) 初/高中：初一二三、高一二三
+    for m in re.finditer(r'初[一二三]|高[一二三]', text):
+        grades.add(m.group(0))
+
+    return list(grades)
+
 def parse_file(filepath):
     """读取文件内容（D6：utf-8 失败回退 gb18030，再失败返回 None）"""
     try:
@@ -91,17 +123,10 @@ def analyze_content(text):
     # 知识脉络学段（启发式匹配，三级模式）
     #  1) 明确锚点：三年级上 / 四年级下册 —— 零歧义
     #  2) 裸缩写（三上/五下）：排除动词/成语语境，旧版 r'一[上下]' 会把"看一下/统一上面"
-    #     "低三下四/三下五除二/四下张望"全部计入学段，几乎每篇辅导文本都被污染
+    #     "低三下四/三下五除二/四下张望"全部计入学段，几乎每篇辅导文本都被污染。
+    #     Python re 不支持变长 lookbehind，故前导边界与成语排除改在 Python 内判定（见 _find_grades）。
     #  3) 初/高中：初一二三、高一二三（旧版漏初三、高二、高三）
-    grade_patterns = [
-        r'[一二三四五六]年级[上下](?:册|学期)?',
-        r'(?<![看想试统点碰算数讲说听读写问答查搜比量称估猜验记画圈改做在低练习固顾论流来去])[一二三四五六][上下](?!张望|五除二)',
-        r'初[一二三]|高[一二三]',
-    ]
-    for pattern in grade_patterns:
-        matches = re.findall(pattern, text)
-        if matches:
-            result['知识脉络学段'].extend(list(set(matches)))
+    result['知识脉络学段'] = _find_grades(text)
 
     return result
 

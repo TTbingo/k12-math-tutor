@@ -20,7 +20,7 @@ exit code: 0=valid 1=invalid（必须看 stderr 才知道为啥失败）
 安全说明（2026-07-13 修复）：
   - 所有 eval() 已替换为基于 AST 的安全求值器 safe_eval_math()
   - 表达式字符串经过严格白名单校验 validate_expression()，仅允许
-    数字、a/b/x 变量名、+ - * / ** % () < > <= >= == != 及空白
+    数字、a/b/x/y/z/m/n 变量名、+ - * / ** % () < > <= >= == != 及空白；根号 √/sqrt 预处理为 **0.5
   - AST 节点白名单确保无函数调用、属性访问、导入或任意代码执行
   - 双层防御：regex 白名单（快速拦截）+ AST 节点白名单（精确拦截）
 """
@@ -67,13 +67,37 @@ _ALLOWED_UNARYOPS = {
     ast.USub: operator.neg,
 }
 
-_ALLOWED_VARS = frozenset({'a', 'b', 'x'})
+_ALLOWED_VARS = frozenset({'a', 'b', 'x', 'y', 'z', 'm', 'n'})
+
+
+def preprocess_math(expr_str: str) -> str:
+    """预处理：将根号符号转换为安全幂运算，便于 AST 求值。
+    - √2 / 2√2 / √2/2 / √(2√2) / sqrt(2) → 等价的 **0.5 形式
+    支持前导系数（2√3 → 2*(3)**0.5）。重复应用以处理嵌套根号。
+    无根号时原样返回。
+    """
+    s = expr_str
+
+    def _coef_repl(m):
+        coeff = m.group(1)
+        inner = m.group(2)
+        return (coeff + '*' if coeff else '') + '(' + inner + ')**0.5'
+
+    for _ in range(3):
+        prev = s
+        s = re.sub(r'√\(\s*([^()]+?)\s*\)', r'(\1)**0.5', s)
+        s = re.sub(r'(\d+(?:\.\d+)?)?√\s*(\d+(?:\.\d+)?)', _coef_repl, s)
+        s = re.sub(r'(\d+(?:\.\d+)?)?√\s*([a-zA-Z]\w*)', _coef_repl, s)
+        s = re.sub(r'sqrt\(\s*([^()]+?)\s*\)', r'(\1)**0.5', s)
+        if s == prev:
+            break
+    return s
 
 
 def validate_expression(expr_str: str) -> None:
     """严格白名单校验：拒绝任何不在允许列表中的字符。
 
-    允许：数字、a/b/x 变量名、+ - * / ** % () < > <= >= == != 及空白
+    允许：数字、a/b/x/y/z/m/n 变量名、+ - * / ** % () < > <= >= == != 及空白；根号 √/sqrt 预处理为 **0.5
     拒绝：下划线、引号、方括号、花括号、分号、反斜杠、冒号等一切其他字符
 
     这是第一层防御。即使通过此校验，safe_eval_math() 的 AST 节点
@@ -230,9 +254,9 @@ def verify_inequality(stmt: str, option: str) -> dict:
           任一方向不一致（stmt⟹option 或 option⟹stmt）即为反例。
           测试点 = 固定点（常规/近边界/不成立区）+ 固定种子随机模糊点。
     """
-    # 预处理：^ → **（数学幂运算符，Python 中 ^ 是异或）
-    stmt = stmt.replace('^', '**')
-    option = option.replace('^', '**')
+    # 预处理：^ → **（数学幂运算符，Python 中 ^ 是异或）；根号 → **0.5
+    stmt = preprocess_math(stmt.replace('^', '**'))
+    option = preprocess_math(option.replace('^', '**'))
 
     # 第一层防御：白名单校验
     try:
@@ -264,9 +288,16 @@ def verify_inequality(stmt: str, option: str) -> dict:
     mismatches = []
     stmt_true = 0
     for a_val, b_val in test_cases:
+        var_dict = {
+            'a': a_val, 'b': b_val,
+            'y': round(rng.uniform(-50, 50), 6),
+            'z': round(rng.uniform(-50, 50), 6),
+            'm': round(rng.uniform(-50, 50), 6),
+            'n': round(rng.uniform(-50, 50), 6),
+        }
         try:
-            s = bool(safe_eval_math(stmt, {'a': a_val, 'b': b_val}))
-            o = bool(safe_eval_math(option, {'a': a_val, 'b': b_val}))
+            s = bool(safe_eval_math(stmt, var_dict))
+            o = bool(safe_eval_math(option, var_dict))
         except (ValueError, ArithmeticError, TypeError, RecursionError) as e:
             return {
                 "valid": False,
@@ -322,7 +353,11 @@ def verify_equation(equation: str, answer: str) -> dict:
         }
 
     # 收集全部根（V7）：旧版 re.search 只取第一个根，二次方程"或"连接的其余根静默漏验
-    root_strs = re.findall(r'x\s*=\s*(-?[\d.]+(?:/[\d.]+)?)', answer)
+    # V11：根值支持含根号形式（√2 / 2√2 / √2/2 / sqrt(2)）；根号形式须置于数字前以避免被纯数字分支截断
+    root_strs = re.findall(
+        r'x\s*=\s*(-?[\d.]*√[^+\-=,\s]+|-?[\d.]*sqrt\([^)]+\)|-?[\d.]+(?:/[\d.]+)?)',
+        answer,
+    )
     if not root_strs:
         return {
             "valid": False,
@@ -331,8 +366,8 @@ def verify_equation(equation: str, answer: str) -> dict:
         }
 
     # 预处理 + 白名单校验（对全部根代回前先做一次，避免逐根重复）
-    lhs = lhs.replace('^', '**')
-    rhs = rhs.replace('^', '**')
+    lhs = preprocess_math(lhs.replace('^', '**'))
+    rhs = preprocess_math(rhs.replace('^', '**'))
     try:
         validate_expression(lhs)
         validate_expression(rhs)
@@ -343,15 +378,24 @@ def verify_equation(equation: str, answer: str) -> dict:
             "counter_evidence": ""
         }
 
-    # 逐根验证
+    # 逐根验证（含 y/z/m/n 随机代入，避免多变量公式在代回时因未赋值报错）
+    eq_rng = random.Random(7)
     failed = []
     verified = []
     for x_val_str in root_strs:
         try:
+            x_val_str = preprocess_math(x_val_str.strip())
             validate_expression(x_val_str)
             x_val = float(safe_eval_math(x_val_str))
-            lhs_val = float(safe_eval_math(lhs, {'x': x_val}))
-            rhs_val = float(safe_eval_math(rhs, {'x': x_val}))
+            var_dict = {
+                'x': x_val,
+                'y': round(eq_rng.uniform(-20, 20), 6),
+                'z': round(eq_rng.uniform(-20, 20), 6),
+                'm': round(eq_rng.uniform(-20, 20), 6),
+                'n': round(eq_rng.uniform(-20, 20), 6),
+            }
+            lhs_val = float(safe_eval_math(lhs, var_dict))
+            rhs_val = float(safe_eval_math(rhs, var_dict))
         except (ValueError, ArithmeticError, TypeError, RecursionError) as e:
             return {
                 "valid": False,
