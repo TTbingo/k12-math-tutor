@@ -12,6 +12,8 @@ validate-structure.py — 通用 Skill 结构完整性校验工具
   3. references 目录文件存在性 & frontmatter 版本
   4. 编号序列连续性（G/M/N/F 等，自动检测）
   5. 跨文件 § 引用有效性（→ §N 模式）
+  6. references 指针存在性（含「→ references/...」明文形式，B4 新增）
+  7. SKILL.md ↔ quick-ref 约束编号/数量一致性（B4 新增，防编号漂移回归）
 """
 
 import os
@@ -406,6 +408,128 @@ def check_section_refs():
         log_ok(f"{len(targets)} 条 § 引用全部有效 ({len(set(targets))} 个唯一目标)")
 
 
+# ─── 6. references 指针存在性（覆盖无反引号形式）────────────
+def check_ref_pointers():
+    """B4：校验 SKILL.md 中所有 references/...md 指针（含「→ references/...」明文形式）指向真实文件。
+
+    旧 check_references 仅扫描反引号包裹的 `.md` 引用，遗漏了正文/列表中的
+    `→ references/xxx.md` 明文指针，导致断链无法被捕获。本检查补此盲区。
+    """
+    print("\n📎 references 指针存在性（含明文形式）")
+
+    skill_md = SKILL_DIR / "SKILL.md"
+    if not skill_md.exists():
+        return
+    content = _read(skill_md)
+    if content is None:
+        log_error("SKILL.md 读取失败（编码异常）")
+        return
+
+    # 匹配 references/路径.md，排除反引号包裹的（已由 check_references 覆盖，避免重复日志）
+    pat = r'(?<!`)\breferences/[A-Za-z0-9_\-/.]+\.md'
+    refs = sorted(set(re.findall(pat, content)))
+    if not refs:
+        log_ok("SKILL.md 无明文 references/ 指针（反引号引用已由 references 检查覆盖）")
+        return
+
+    for ref in refs:
+        target = SKILL_DIR / ref
+        if target.exists():
+            log_ok(f"{ref} 存在")
+        else:
+            log_error(f"references 指针目标不存在: {ref}")
+
+
+# ─── 7. SKILL.md ↔ quick-ref 约束编号一致性（B4 防漂移核心）──
+def check_constraint_consistency():
+    """B4：校验 SKILL.md 约束表、声明条数、quick-ref 约束头 三者一致。
+
+    防回归点：B0 修复前 quick-ref 实际有 19 个编号约束（自检清单=18、HTML=19），
+    与 SKILL.md 主表（18=HTML）错位一格，导致 `→ §18` 在 quick-ref 解析到错误章节。
+    本检查从机制上捕获：声明条数≠表实条数 / 编号不连续 / 两文件编号集合不一致。
+    """
+    print("\n🔗 约束编号一致性（SKILL.md ↔ quick-ref）")
+
+    skill_md = SKILL_DIR / "SKILL.md"
+    qr = SKILL_DIR / "references" / "constraints-quick-ref.md"
+    if not skill_md.exists() or not qr.exists():
+        log_warn("SKILL.md 或 constraints-quick-ref.md 缺失，跳过约束一致性检查")
+        return
+    sc = _read(skill_md)
+    qc = _read(qr)
+    if sc is None:
+        log_error("SKILL.md 读取失败（编码异常）")
+        return
+    if qc is None:
+        log_error("constraints-quick-ref.md 读取失败（编码异常）")
+        return
+
+    # 7a. SKILL.md 声明条数： "N 条硬约束"
+    decl_m = re.search(r'(\d+)\s*条\s*硬约束', sc)
+    declared = int(decl_m.group(1)) if decl_m else None
+
+    # 7b. SKILL.md 约束表实际编号（表格首列 **N**）
+    table_nums = [int(m) for m in re.findall(r'^\|\s*\*\*(\d+)\*\*\s*\|', sc, re.MULTILINE)]
+
+    # 7c. quick-ref 约束头编号
+    quick_nums = [int(m) for m in re.findall(r'^##\s+约束\s*(\d+)', qc, re.MULTILINE)]
+
+    # 仅当 SKILL.md 约束表 与 quick-ref 约束头 两侧都具备时才做严格一致性校验。
+    # 最小化 fixture（无约束表 / 无约束头）场景跳过，避免对抽象测试样本误报；
+    # 本检查目标是在真实技能中捕获两文件编号漂移（如 B0 的 约束19 错位）。
+    if not table_nums or not quick_nums:
+        log_ok("SKILL.md 约束表或 quick-ref 约束头缺一侧，跳过严格一致性校验（适用于含完整约束定义的 Skill）")
+        return
+
+    # 有效声明条数：优先用「N 条硬约束」声明，缺失时退化为约束表实有数量
+    effective = declared if declared else len(table_nums)
+
+    if declared is None:
+        log_ok(f"SKILL.md 未声明「N 条硬约束」条数，以约束表实有 {len(table_nums)} 条为准")
+    else:
+        log_ok(f"SKILL.md 声明约束条数: {declared}")
+
+    # 表实条数 vs 声明
+    if declared is not None and len(table_nums) != declared:
+        log_error(f"SKILL.md 约束表实际 {len(table_nums)} 条，但声明 {declared} 条")
+    else:
+        log_ok(f"SKILL.md 约束表实有 {len(table_nums)} 条")
+
+    # 表编号连续性（应 1..effective 无缺口）
+    expected = set(range(1, effective + 1))
+    table_set = set(table_nums)
+    if table_set == expected:
+        log_ok(f"SKILL.md 约束编号连续: 1-{effective}")
+    else:
+        missing = sorted(expected - table_set)
+        extra = sorted(table_set - expected)
+        if missing:
+            log_error(f"SKILL.md 约束表缺编号: {missing}")
+        if extra:
+            log_error(f"SKILL.md 约束表多出未声明编号: {extra}")
+
+    # quick-ref 编号集合应 == 1..effective
+    quick_set = set(quick_nums)
+    if quick_set == expected:
+        log_ok(f"quick-ref 约束编号连续: 1-{effective}")
+    else:
+        missing = sorted(expected - quick_set)
+        extra = sorted(quick_set - expected)
+        if missing:
+            log_error(f"constraints-quick-ref.md 缺失约束: {missing}")
+        if extra:
+            log_error(f"constraints-quick-ref.md 多出约束（未对齐 SKILL.md）: {extra}")
+
+    # 7d. SKILL.md 中「→ 约束N」明文指针有效性（B3 新增的联动约束段使用此形式）
+    ptr_nums = set(int(m) for m in re.findall(r'约束\s*(\d+)', sc))
+    valid = set(range(1, effective + 1))
+    bad = sorted(ptr_nums - valid)
+    if bad:
+        log_error(f"SKILL.md 内「约束N」指针指向不存在的编号: {bad}")
+    else:
+        log_ok(f"SKILL.md 内「约束N」指针全部有效（{len(ptr_nums)} 个唯一目标）")
+
+
 # ─── main ───────────────────────────────────────────────────
 def main():
     skill_name = SKILL_DIR.name if SKILL_DIR.name else "Unknown"
@@ -415,8 +539,10 @@ def main():
     ver = check_versions()
     check_cross_file_numbers()       # 核心：跨文件数值一致性
     check_references()
+    check_ref_pointers()             # B4：references 明文指针存在性
     check_number_sequences()
     check_section_refs()
+    check_constraint_consistency()   # B4：SKILL.md ↔ quick-ref 约束编号一致性
 
     # Summary
     print(f"\n{'='*50}")

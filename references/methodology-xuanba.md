@@ -1,6 +1,6 @@
 ---
 title: "methodology xuanba"
-version: 1.9.0
+version: 2.0
 last_updated: 2026-07-21
 usage: "按需查阅，不自动展开"
 ---

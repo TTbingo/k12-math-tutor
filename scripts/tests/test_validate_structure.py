@@ -45,6 +45,42 @@ def test_s1_body_mention_is_warn_not_error(tmp_path):
     assert "❌" not in r.stdout
 
 
+# ── B4 钉住：约束编号一致性 + references 明文指针 ──────────
+def _minimal_constraint_skill(d, table_rows, quick_headers, extra_skill=""):
+    table = "| # | 约束名 | 详细 |\n| :-: | ------ | ------ |\n" + "\n".join(
+        f"| **{n}** | C{n} | → §{n} |" for n in table_rows)
+    skill_md = (
+        "---\nversion: 1.0.0\n---\n"
+        f"## 📋 {len(table_rows)} 条硬约束(if-then 表)\n{table}\n{extra_skill}"
+    )
+    refs = {"constraints-quick-ref.md": "# 约束速查\n" + "\n".join(
+        f"## 约束 {n}｜C{n}" for n in quick_headers)}
+    make_skill(d, skill_md, refs)
+
+
+def test_b4_constraint_drift_is_error(tmp_path):
+    # SKILL.md 表 1..2，但 quick-ref 多出 约束 3（B0 式错位）
+    _minimal_constraint_skill(tmp_path, [1, 2], [1, 2, 3])
+    r = run(tmp_path)
+    assert "多出约束" in r.stdout and "❌" in r.stdout and r.returncode != 0
+
+
+def test_b4_ref_pointer_missing_is_error(tmp_path):
+    # SKILL.md 含明文（无反引号）断链指针
+    _minimal_constraint_skill(tmp_path, [1, 2], [1, 2],
+                              extra_skill="→ references/__missing_b4.md\n")
+    r = run(tmp_path)
+    assert "指针目标不存在" in r.stdout and "❌" in r.stdout and r.returncode != 0
+
+
+def test_b4_consistent_passes(tmp_path):
+    # 两侧一致时应 0 错误、0 漂移
+    _minimal_constraint_skill(tmp_path, [1, 2], [1, 2])
+    r = run(tmp_path)
+    assert "多出约束" not in r.stdout and "指针目标不存在" not in r.stdout
+    assert "❌" not in r.stdout
+
+
 # ── S2 钉住：evals/ 子目录 + scripts/*.py 断链 ───────────
 def test_s2_evals_missing_is_error(tmp_path):
     make_skill(tmp_path,

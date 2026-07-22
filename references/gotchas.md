@@ -1,6 +1,6 @@
 ---
 title: "K12 失败模式库（飞轮追加）"
-version: 1.9.0
+version: 2.0
 last_updated: 2026-07-21
 append_only: true  # 重要：追加，不覆盖
 ---
