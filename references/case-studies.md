@@ -197,6 +197,6 @@ retired_cases: 9  # 已迁移到 references/anti-patterns.md
 ## 🔗 关联文件
 
 - `references/anti-patterns.md` —— 9 个已退休案例 + 反例示范(搭配 G1-G24 gotchas)
-- `references/constraints-quick-ref.md` —— 18 条硬约束速查卡
+- `references/constraints-quick-ref.md` —— 19 条硬约束速查卡
 - `references/gotchas.md` —— 41 个失败模式库
 - `references/methodology-*.md` —— 4 套方法论完整版（含快速调用矩阵）
