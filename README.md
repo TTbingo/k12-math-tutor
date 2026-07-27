@@ -4,7 +4,7 @@
   <br/><br/>
   不只是解题工具，是一套<b>教学哲学系统</b>。
   <br/>
-  融合五位教育专家的方法论，编码为 19 条硬约束、41 项失败模式库（G1-G41，39 有效）、5 条教学哲学线的可执行辅导引擎。
+  融合五位教育专家的方法论，编码为 19 条硬约束、42 项失败模式库（G1-G42，40 有效）、5 条教学哲学线的可执行辅导引擎。
   <br/><br/>
 </p>
 
@@ -95,7 +95,19 @@ Skill 会在 WorkBuddy 对话中**自动识别触发词并加载**，无需手�
 | 模式 | 触发条件 | 行为 |
 |------|---------|------|
 | 🧒 **学生模式** | "我不会做…""这道题怎么做" | 苏格拉底五轮追问（L0→L4）+ 情绪扫描 + 知识脉络 |
-| 👨‍👩‍👦 **家长模式** | "孩子…""我家娃…""帮我讲一下" | 六合一模板：解析 + 多解 + 难点预判 + 引导脚本 + 知识链 + 延伸练习 |
+| 👨‍👩‍👦 **家长模式** | "孩子…""我家娃…""帮我讲一下" | 六合一模板，按学段三档分层（小学全量 / 初中四核 / 高中三件套） |
+
+### 🎒 家长模式三档分层
+
+2026-07-27 落地：家长模式不再"一刀切"，根据孩子年级自动切换输出密度与风格。
+
+| 学段 | 模板 | 字数上限 | 信息密度 | 情绪风格 | 知识脉络 |
+|:----:|------|:-------:|:-------:|---------|---------|
+| 🧒 **小学** | 六合一全出 | ≤2000 | 高，生活化具象 | 游戏化·夸夸全量·家长旁白 | 三站式（上一站/这一站/下一站） |
+| 👦 **初中** | 四核精简 | ≤1200 | 中，精炼直接去说教 | 平等对话框架·避唠叨比较 | 仅初中段 + 高中衔接一句 |
+| 🧑 **高中** | 三件套极简 | ≤600 | 低，高度凝练 | 升学焦虑支持·尊重自主判断 | 高考节点一句 |
+
+初中去低龄隐喻（不再套用"福尔摩斯""画大饼"式表达），高中不塞长篇话术，尊重家长自主判断空间。详见 [`references/parent-grade-layering.md`](references/parent-grade-layering.md)。
 
 ### 📚 K12 三层知识库
 
@@ -107,7 +119,7 @@ Skill 会在 WorkBuddy 对话中**自动识别触发词并加载**，无需手�
 
 ### 🔄 飞轮进化机制
 
-每次辅导失败 → 自动追加到 `gotchas.md`（G1-G41，39 条有效）→ 升级约束规则 → Skill 越用越准。P3 定期回顾（每 30 天 / 每 10 条记录 / 每次大版本变动）自动归并去重。
+每次辅导失败 → 自动追加到 `gotchas.md`（G1-G42，40 条有效）→ 升级约束规则 → Skill 越用越准。P3 定期回顾（每 30 天 / 每 10 条记录 / 每次大版本变动）自动归并去重。
 
 ### 📝 错题本系统
 
@@ -171,7 +183,7 @@ Skill 会在 WorkBuddy 对话中**自动识别触发词并加载**，无需手�
 | 组件 | 位置 | 职责 |
 |------|------|------|
 | **主入口** | `SKILL.md` | Skill 加载钩子、约束引擎、SOP 工作流、自检清单 |
-| **知识库** | `references/`（36 个文件，扁平结构） | 方法论文档、K12 知识体系、案例库、错题模板 |
+| **知识库** | `references/`（37 个文件，扁平结构） | 方法论文档、K12 知识体系、案例库、错题模板 |
 | **验证工具链** | `scripts/`（6 个文件） | LaTeX 检查、答案验证、偏离检测、结构校验 |
 | **共享兼容层** | `scripts/_compat.py` | Windows GBK 终端 UTF-8 适配 |
 | **测试套件** | `scripts/tests/`（7 个文件） | pytest 67 用例回归 + 集成冒烟 |
@@ -209,7 +221,7 @@ k12-math-tutor/
 │       ├── test_extract_equation.py
 │       └── test_validate_structure.py
 │
-└── references/                                # 知识资产（36 个文件，扁平结构）
+└── references/                                # 知识资产（37 个文件，扁平结构）
     │
     ├── anti-patterns.md
     ├── arithmetic-patterns.json
@@ -222,7 +234,7 @@ k12-math-tutor/
     ├── diagnosis-card-template.html
     ├── diff-case-keywords.json
     ├── exam-bank.md
-    ├── gotchas.md                             # 失败模式库 G1-G41
+    ├── gotchas.md                             # 失败模式库 G1-G42
     ├── grade-curriculum-map.md
     ├── grade-quick-ref.md
     ├── hs-math-review-compendium.md
@@ -239,6 +251,7 @@ k12-math-tutor/
     ├── mistake-bank.md
     ├── olympiad-cases.md
     ├── p3-review-mechanism.md
+    ├── parent-grade-layering.md               # 家长模式三档分层规格
     ├── question-design.md
     ├── seligman-positive-parenting.md
     ├── skill-health.md
@@ -269,7 +282,7 @@ k12-math-tutor/
 
 ### 失败模式库
 
-已积累 **G1-G41**（39 条有效，2 条已淘汰），按触发信号自动追加。详见 [`references/gotchas.md`](references/gotchas.md)。
+已积累 **G1-G42**（40 条有效，2 条已淘汰），按触发信号自动追加。详见 [`references/gotchas.md`](references/gotchas.md)。
 
 ---
 
